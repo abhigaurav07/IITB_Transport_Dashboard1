@@ -126,21 +126,33 @@ function RulerRow({
   boundaries: ChainageCellBounds[];
   edge: "top" | "bottom";
 }) {
+  // The ruler's own edge (its border) sits flush against the lane grid; the
+  // free space on the other side of that edge is where the tick and its
+  // label live, growing away from the grid, like a scale drawn beside a
+  // ruled box rather than text packed inside it.
   const borderClass = edge === "bottom" ? "border-b" : "border-t";
+  const tickPos = edge === "bottom" ? "bottom-0" : "top-0";
+  const labelPos = edge === "bottom" ? "bottom-2.5" : "top-2.5";
   return (
     <>
       <div className={`sticky left-0 z-10 bg-surface ${borderClass} border-line`} />
       {boundaries.map((b, i) => {
-        // Every box's left edge is marked with its exact chainage, in the
-        // standard km+m form, so there is never any doubt about where a box
-        // sits on the 0 to totalKm reference line. The whole-km marks
-        // (0+000, 1+000, 2+000, ...) are emphasized as the primary scale;
-        // the 200 m marks in between are lighter, secondary ticks.
+        // Every box's left edge gets its own tick, extended out from the
+        // grid line, with its exact chainage written beside it in the
+        // standard km+m form, so a label is never ambiguous about which
+        // boundary it belongs to. Whole-km ticks (0+000, 1+000, 2+000, ...)
+        // are taller and darker, marking the primary scale; the 200 m ticks
+        // in between are short, secondary marks.
         const isWholeKm = Math.abs(b.from - Math.round(b.from)) < 1e-6;
         return (
-          <div key={i} className={`relative h-14 ${borderClass} border-line`}>
+          <div key={i} className={`relative h-16 ${borderClass} border-line`}>
+            <div
+              className={`absolute left-0 w-px ${tickPos} ${
+                isWholeKm ? "h-2.5 bg-ink" : "h-1.5 bg-ink-muted/60"
+              }`}
+            />
             <span
-              className={`absolute left-1/2 top-0.5 origin-top-left whitespace-nowrap text-[7px] leading-none tabular-nums ${
+              className={`absolute left-0.5 ${labelPos} origin-top-left whitespace-nowrap text-[7px] leading-none tabular-nums ${
                 isWholeKm ? "font-semibold text-ink" : "text-ink-muted"
               }`}
               style={{ transform: "rotate(90deg)" }}
