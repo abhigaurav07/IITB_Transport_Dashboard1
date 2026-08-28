@@ -21,7 +21,9 @@ export default function StatCard({
   return (
     <div className="rounded-xl border border-line bg-surface p-4 lg:p-5">
       <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{label}</p>
-      <p className={`mt-2 text-2xl font-semibold tabular-nums leading-none lg:text-3xl ${TONE_TEXT[tone]}`}>
+      <p
+        className={`mt-2 truncate text-xl font-semibold tabular-nums leading-none sm:text-2xl lg:text-3xl ${TONE_TEXT[tone]}`}
+      >
         {value}
       </p>
       {sublabel ? <p className="mt-2 text-xs text-ink-muted">{sublabel}</p> : null}

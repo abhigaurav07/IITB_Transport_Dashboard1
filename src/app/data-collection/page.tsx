@@ -29,7 +29,7 @@ export default function DataCollectionPage() {
 
       <section>
         <SectionTitle title="Progress Summary" />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6 lg:gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5 lg:gap-4">
           <StatCard label="Overall Progress" value={`${summary.overallPercent.toFixed(1)}%`} tone="primary" />
           <StatCard
             label="Chainage Covered"
@@ -46,12 +46,6 @@ export default function DataCollectionPage() {
             label="Days Active"
             value={`${summary.daysActive}`}
             sublabel={summary.avgKmPerDay > 0 ? `${summary.avgKmPerDay.toFixed(1)} km/day avg` : "No entries yet"}
-          />
-          <StatCard
-            label="Est. Completion"
-            value={summary.estRemainingDays !== null ? `~${summary.estRemainingDays} days` : "Not available"}
-            sublabel="at current pace"
-            tone="warning"
           />
         </div>
       </section>
