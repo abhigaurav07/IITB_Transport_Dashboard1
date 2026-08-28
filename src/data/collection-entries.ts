@@ -44,6 +44,10 @@ export const IS_SAMPLE_DATA = false;
 export const PENDING_VERIFICATION_NOTE =
   "Entries #5, #8, #9, #10 and #11 were transcribed from a scanned survey chart and need to be confirmed against the original record before they are treated as final.";
 
+// Note: #7 (MP, L1, chainage 34 to 62, 27 Aug 2026) was removed. It was
+// originally logged as surveyed but the survey for that stretch was not
+// actually completed, so it is correctly shown as not surveyed on the
+// tracker. The reference numbers intentionally skip from #6 to #8.
 export const collectionEntries: CollectionEntry[] = [
   {
     id: "e1",
@@ -104,16 +108,6 @@ export const collectionEntries: CollectionEntry[] = [
     lane: "L3",
     chainageFrom: 0,
     chainageTo: 31,
-    remarks: "Classified volume count",
-  },
-  {
-    id: "e7",
-    seq: 7,
-    date: "2026-08-27",
-    direction: "MP",
-    lane: "L1",
-    chainageFrom: 34,
-    chainageTo: 62.4,
     remarks: "Classified volume count",
   },
   {
