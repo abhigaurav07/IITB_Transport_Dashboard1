@@ -18,7 +18,7 @@ import type { CollectionEntry } from "@/lib/types";
  *     id: "e10",                    // any unique string
  *     date: "2026-08-26",           // YYYY-MM-DD
  *     direction: "MP",              // "MP" (Mumbai→Pune) | "PM" (Pune→Mumbai)
- *     lane: "L1",                   // "L1" | "L2" | "L3"
+ *     lane: "L1",                   // "L1" (Outer Lane) | "L2" (Middle Lane) | "L3" (Inner Lane, nearest median)
  *     chainageFrom: 31.4,           // km, start of the surveyed segment
  *     chainageTo: 38.0,             // km, end of the surveyed segment
  *     team: "Survey Team A",        // optional

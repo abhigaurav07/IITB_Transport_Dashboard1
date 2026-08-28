@@ -150,6 +150,62 @@ export function computeProjectSummary(entries: CollectionEntry[]): ProjectSummar
   };
 }
 
+export type CellStatus = "covered" | "partial" | "empty";
+
+export interface ChainageCellBounds {
+  from: number;
+  to: number;
+}
+
+export interface ChainageCell extends ChainageCellBounds {
+  status: CellStatus;
+  /** % of this cell's chainage span that has been surveyed. */
+  percent: number;
+}
+
+/**
+ * Fixed chainage boundaries (0, cellSizeKm, 2*cellSizeKm, ..., totalKm),
+ * shared by every lane/direction so their status grids line up under a
+ * single chainage axis. The final cell is shortened rather than dropped
+ * when totalKm isn't an exact multiple of cellSizeKm.
+ */
+export function chainageCellBoundaries(totalKm: number, cellSizeKm: number): ChainageCellBounds[] {
+  const bounds: ChainageCellBounds[] = [];
+  let from = 0;
+  while (from < totalKm - 1e-9) {
+    const to = Math.min(from + cellSizeKm, totalKm);
+    bounds.push({ from, to });
+    from = to;
+  }
+  return bounds;
+}
+
+/**
+ * Buckets a lane's covered intervals into fixed-width chainage cells for
+ * the status-light grid. Each cell is "covered" if fully surveyed,
+ * "partial" if only part of its span is, "empty" if untouched.
+ */
+export function computeChainageCells(
+  coveredIntervals: Interval[],
+  boundaries: ChainageCellBounds[]
+): ChainageCell[] {
+  const merged = mergeIntervals(coveredIntervals);
+  return boundaries.map(({ from, to }) => {
+    let coveredKm = 0;
+    for (const iv of merged) {
+      const overlapFrom = Math.max(iv.from, from);
+      const overlapTo = Math.min(iv.to, to);
+      if (overlapTo > overlapFrom) coveredKm += overlapTo - overlapFrom;
+    }
+    const cellLen = to - from;
+    const percent = cellLen > 0 ? (coveredKm / cellLen) * 100 : 0;
+    let status: CellStatus = "empty";
+    if (percent >= 99.9) status = "covered";
+    else if (percent > 0.05) status = "partial";
+    return { from, to, status, percent };
+  });
+}
+
 export function formatKm(km: number, decimals = 1): string {
   return `${km.toFixed(decimals)} km`;
 }

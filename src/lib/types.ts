@@ -4,6 +4,13 @@
 export type DirectionId = "MP" | "PM";
 export type LaneId = "L1" | "L2" | "L3";
 
+/**
+ * A lane's position relative to the median, independent of direction.
+ * "Inner" is always the lane adjacent to the median (fastest/overtaking
+ * lane), "Outer" is always the lane adjacent to the road edge.
+ */
+export type LanePosition = "Inner" | "Middle" | "Outer";
+
 export interface Direction {
   id: DirectionId;
   /** Full label, e.g. "Mumbai → Pune" */
@@ -14,7 +21,9 @@ export interface Direction {
 
 export interface Lane {
   id: LaneId;
+  /** Display label, e.g. "Outer Lane" */
   label: string;
+  position: LanePosition;
 }
 
 /**

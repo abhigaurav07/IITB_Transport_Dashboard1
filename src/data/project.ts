@@ -17,8 +17,16 @@ export const DIRECTIONS: Direction[] = [
   { id: "PM", label: "Pune → Mumbai", shortLabel: "P → M" },
 ];
 
+/**
+ * Lane identity is independent of direction — every direction has its own
+ * Outer / Middle / Inner lane. "Inner" is always the lane nearest the
+ * median, "Outer" the lane nearest the road edge.
+ *   L1 = Outer Lane   (nearest the edge)
+ *   L2 = Middle Lane
+ *   L3 = Inner Lane    (nearest the median)
+ */
 export const LANES: Lane[] = [
-  { id: "L1", label: "Lane 1" },
-  { id: "L2", label: "Lane 2" },
-  { id: "L3", label: "Lane 3" },
+  { id: "L1", label: "Outer Lane", position: "Outer" },
+  { id: "L2", label: "Middle Lane", position: "Middle" },
+  { id: "L3", label: "Inner Lane", position: "Inner" },
 ];
