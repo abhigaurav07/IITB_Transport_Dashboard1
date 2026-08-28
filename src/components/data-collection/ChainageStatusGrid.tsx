@@ -2,6 +2,7 @@ import type { Lane, LaneId, DirectionId } from "@/lib/types";
 import {
   chainageCellBoundaries,
   computeChainageCells,
+  formatChainage,
   type CellStatus,
   type ChainageCell,
   type ChainageCellBounds,
@@ -9,7 +10,7 @@ import {
 } from "@/lib/collection-utils";
 import { LANES, PROJECT, laneCode } from "@/data/project";
 
-// 1 box = 1 km of chainage. At 94.4 km this renders ~95 boxes per lane.
+// 1 box = 1 km of chainage. At 94.6 km this renders ~95 boxes per lane.
 const CELL_SIZE_KM = 1;
 const CELL_WIDTH_PX = 16;
 const LABEL_WIDTH_PX = 196;
@@ -53,7 +54,8 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
         <div>
           <h3 className="text-sm font-semibold text-ink">Lane-wise Survey Status</h3>
           <p className="text-xs text-ink-muted">
-            Each box represents {CELL_SIZE_KM} km of chainage, from 0 to {totalKm} km. Hover a box for detail.
+            Each box represents {CELL_SIZE_KM} km of chainage, from {formatChainage(0)} to {formatChainage(totalKm)}.
+            Hover a box for detail.
           </p>
         </div>
         <Legend />
@@ -155,8 +157,8 @@ function EndpointLabelRow({ colCount }: { colCount: number }) {
         style={{ gridColumn: `2 / span ${colCount}` }}
         className="flex items-center justify-between border-b border-line bg-canvas px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink-muted"
       >
-        <span>Mumbai (0 km)</span>
-        <span>Pune ({PROJECT.totalChainageKm} km)</span>
+        <span>Mumbai ({formatChainage(0)})</span>
+        <span>Pune ({formatChainage(PROJECT.totalChainageKm)})</span>
       </div>
     </>
   );
@@ -196,7 +198,7 @@ function LaneRow({
       {cells.map((cell, i) => (
         <div
           key={i}
-          title={`${label} · Chainage ${cell.from.toFixed(1)} to ${cell.to.toFixed(1)} km · ${STATUS_LABEL[cell.status]}${
+          title={`${label} · Chainage ${formatChainage(cell.from)} to ${formatChainage(cell.to)} · ${STATUS_LABEL[cell.status]}${
             cell.status === "partial" ? ` (${cell.percent.toFixed(0)}%)` : ""
           }`}
           className={`h-5 border-b border-r border-white/50 ${STATUS_COLOR[cell.status]}`}

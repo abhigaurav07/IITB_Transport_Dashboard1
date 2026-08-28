@@ -48,8 +48,6 @@ export interface CollectionEntry {
   chainageFrom: number;
   /** End chainage in km */
   chainageTo: number;
-  /** Optional survey crew / team identifier */
-  team?: string;
   /** Optional free-text note (equipment used, conditions, etc.) */
   remarks?: string;
   /** True while this entry's chainage still needs confirmation against the source record. */

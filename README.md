@@ -49,23 +49,24 @@ which keeps the whole module a static, zero maintenance page that you
 redeploy whenever there is new data to add.
 
 To log a new day's survey, append one object per lane/direction segment to
-the `collectionEntries` array:
+the `collectionEntries` array. Chainage is entered here in plain km; the
+page displays it in the standard engineering notation (12.2 becomes
+"12+200" on screen):
 
 ```ts
 {
-  id: "e12",                    // any unique string
-  seq: 12,                      // next reference number, shown as "#12" on the page
+  id: "e10",                    // any unique string
+  seq: 10,                      // next reference number, shown as "#10" on the page
   date: "2026-08-28",           // YYYY-MM-DD
   direction: "MP",              // "MP" (Mumbai to Pune) | "PM" (Pune to Mumbai)
   lane: "L1",                   // "L1" (Inner Lane) | "L2" (Middle Lane) | "L3" (Outer Lane)
-  chainageFrom: 31.4,           // km, start of the surveyed segment
+  chainageFrom: 31.2,           // km, start of the surveyed segment
   chainageTo: 38.0,             // km, end of the surveyed segment
-  team: "Survey Team A",        // optional
-  remarks: "Classified count",  // optional
+  remarks: "",                  // optional, leave out or blank if there is nothing to note
 },
 ```
 
-Chainage is always expressed on the single 0 to 94.4 km reference line for
+Chainage is always expressed on the single 0 to 94.6 km reference line for
 that lane, regardless of direction. On the field record, lanes on the
 Mumbai to Pune carriageway are addressed L1/L2/L3 and lanes on the Pune to
 Mumbai carriageway as R1/R2/R3; both map to the same lane id here, since

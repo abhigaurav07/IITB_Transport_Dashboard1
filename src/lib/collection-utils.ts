@@ -210,6 +210,19 @@ export function formatKm(km: number, decimals = 1): string {
   return `${km.toFixed(decimals)} km`;
 }
 
+/**
+ * Engineering chainage notation: 12.2 km becomes "12+200" (12 km plus
+ * 200 m). Use this for any specific chainage position or range on the
+ * 0 to totalChainageKm reference line. Aggregate totals summed across
+ * multiple lanes (which are not a position on the road) stay in plain km.
+ */
+export function formatChainage(km: number): string {
+  const totalMeters = Math.round(km * 1000);
+  const kmPart = Math.floor(totalMeters / 1000);
+  const mPart = totalMeters % 1000;
+  return `${kmPart}+${String(mPart).padStart(3, "0")}`;
+}
+
 export function formatDate(iso: string): string {
   const d = new Date(`${iso}T00:00:00`);
   return d.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });

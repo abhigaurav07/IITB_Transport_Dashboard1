@@ -10,9 +10,11 @@ export const PROJECT = {
   shortName: "Mumbai-Pune Expressway",
   fullName:
     "Traffic and Transportation Data Collection Study for the Mumbai-Pune Expressway (Yashwantrao Chavan Expressway)",
-  totalChainageKm: 94.4,
+  totalChainageKm: 94.6,
   startChainage: 0,
   laneConfiguration: "6 lane expressway (3 lanes per direction)",
+  /** Shown as a bracketed tag next to the chainage extent on the tracker header. */
+  chainageTag: "GHAT SECTION COVERAGE",
 } as const;
 
 export const DIRECTIONS: Direction[] = [

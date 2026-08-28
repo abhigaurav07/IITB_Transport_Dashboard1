@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import type { CollectionEntry, DirectionId, LaneId } from "@/lib/types";
 import { DIRECTIONS, LANES, laneCodeLabel } from "@/data/project";
-import { formatDate } from "@/lib/collection-utils";
+import { formatChainage, formatDate } from "@/lib/collection-utils";
 
 type SortKey = "seq" | "date" | "chainageFrom" | "length";
 type SortDir = "asc" | "desc";
@@ -109,9 +109,9 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
       ) : (
         <div className="overflow-x-auto [scrollbar-width:thin]">
           <p className="px-4 pb-1.5 pt-2 text-[11px] text-ink-muted lg:hidden">
-            Swipe left to see chainage, length, team and remarks →
+            Swipe left to see chainage, length and remarks →
           </p>
-          <table className="w-full min-w-[820px] text-sm">
+          <table className="w-full min-w-[720px] text-sm">
             <thead>
               <tr className="border-b border-line bg-canvas/60 text-left text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
                 <SortableTh label="#" active={sortKey === "seq"} dir={sortDir} onClick={() => toggleSort("seq")} />
@@ -130,7 +130,6 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
                   dir={sortDir}
                   onClick={() => toggleSort("length")}
                 />
-                <th className="px-4 py-2.5">Team</th>
                 <th className="px-4 py-2.5">Remarks</th>
               </tr>
             </thead>
@@ -146,14 +145,13 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
                     {laneCodeLabel(e.direction, e.lane)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 tabular-nums text-ink-muted">
-                    Chainage {e.chainageFrom.toFixed(1)} to {e.chainageTo.toFixed(1)}
+                    Chainage {formatChainage(e.chainageFrom)} to {formatChainage(e.chainageTo)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 tabular-nums font-medium text-ink">
                     {(e.chainageTo - e.chainageFrom).toFixed(1)} km
                   </td>
-                  <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">{e.team ?? "Not specified"}</td>
                   <td className="px-4 py-2.5 text-ink-muted">
-                    {e.remarks ?? "No remarks"}
+                    {e.remarks ? e.remarks : <span className="italic text-ink-muted/60">No remarks</span>}
                     {e.needsVerification ? (
                       <span className="ml-2 inline-flex items-center rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-medium text-warning">
                         Pending verification

@@ -82,7 +82,7 @@ function PageHeader({ summary }: { summary: ProjectSummary }) {
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
           {PROJECT.shortName} &middot; {PROJECT.laneConfiguration} &middot; Chainage 0 to {PROJECT.totalChainageKm}{" "}
-          km
+          km [{PROJECT.chainageTag}]
         </p>
       </div>
       <div className="text-left lg:text-right">

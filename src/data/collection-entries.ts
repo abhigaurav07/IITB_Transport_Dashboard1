@@ -9,28 +9,23 @@ import type { CollectionEntry } from "@/lib/types";
  * page. There is no database, so updating this array and redeploying is
  * the entire workflow.
  *
- * A few entries below are marked needsVerification: true. They were
- * transcribed from a scanned survey chart where a handful of chainage
- * figures were not fully legible; everything else on this page already
- * reflects the confirmed record. Once those figures are confirmed, clear
- * the flag (or correct the numbers) and remove PENDING_VERIFICATION_NOTE.
- *
  * HOW TO ADD A NEW DAY'S ENTRY
- * Append one object per lane/direction segment surveyed that day:
+ * Append one object per lane/direction segment surveyed that day. Chainage
+ * is written in plain km here (the page renders it in the standard
+ * engineering notation, e.g. 12.2 becomes "12+200" on screen):
  *
  *   {
- *     id: "e12",
- *     seq: 12,                      // next reference number, "#12" on the page
+ *     id: "e10",
+ *     seq: 10,                      // next reference number, "#10" on the page
  *     date: "2026-08-28",           // YYYY-MM-DD
  *     direction: "MP",              // "MP" (Mumbai to Pune) | "PM" (Pune to Mumbai)
  *     lane: "L1",                   // "L1" (Inner Lane, nearest median) | "L2" (Middle Lane) | "L3" (Outer Lane)
- *     chainageFrom: 31.4,           // km, start of the surveyed segment
+ *     chainageFrom: 31.2,           // km, start of the surveyed segment
  *     chainageTo: 38.0,             // km, end of the surveyed segment
- *     team: "Survey Team A",        // optional
- *     remarks: "Classified count",  // optional
+ *     remarks: "",                  // optional, leave out or blank if there is nothing to note
  *   },
  *
- * Chainage is always expressed on the single 0 to 94.4 km reference line,
+ * Chainage is always expressed on the single 0 to 94.6 km reference line,
  * regardless of direction. On the record, lanes on the Mumbai to Pune
  * carriageway are addressed L1/L2/L3 and lanes on the Pune to Mumbai
  * carriageway as R1/R2/R3; both map to the same lane ids here (direction
@@ -38,17 +33,19 @@ import type { CollectionEntry } from "@/lib/types";
  * or duplicate ranges are handled automatically by
  * src/lib/collection-utils.ts (merged, not double counted), so logging a
  * re-survey of an already covered stretch is safe.
+ *
+ * An entry can be marked needsVerification: true if its chainage still
+ * needs to be confirmed against the original field record; this shows a
+ * "Pending verification" tag on that row and a notice banner at the top
+ * of the page. None of the entries below currently need it.
  */
 export const IS_SAMPLE_DATA = false;
 
 export const PENDING_VERIFICATION_NOTE =
-  "Entries #5, #8, #9, #10 and #11 were transcribed from a scanned survey chart and need to be confirmed against the original record before they are treated as final.";
+  "Some entries below are pending verification against the original field record. Check the tagged rows in the Daily Collection Log.";
 
-// Note: #7 (MP, L1, chainage 34 to 62, 27 Aug 2026) was removed. It was
-// originally logged as surveyed but the survey for that stretch was not
-// actually completed, so it is correctly shown as not surveyed on the
-// tracker. The reference numbers intentionally skip from #6 to #8.
 export const collectionEntries: CollectionEntry[] = [
+  // 26 August 2026
   {
     id: "e1",
     seq: 1,
@@ -57,58 +54,62 @@ export const collectionEntries: CollectionEntry[] = [
     lane: "L1",
     chainageFrom: 0,
     chainageTo: 34,
-    remarks: "Classified volume count",
   },
   {
     id: "e2",
     seq: 2,
     date: "2026-08-26",
-    direction: "PM",
-    lane: "L1",
+    direction: "MP",
+    lane: "L2",
     chainageFrom: 0,
-    chainageTo: 31,
-    remarks: "Classified volume count",
+    chainageTo: 30,
   },
   {
     id: "e3",
     seq: 3,
     date: "2026-08-26",
-    direction: "MP",
-    lane: "L2",
+    direction: "PM",
+    lane: "L1",
     chainageFrom: 0,
-    chainageTo: 30,
-    remarks: "Classified volume count",
+    chainageTo: 31,
   },
   {
     id: "e4",
     seq: 4,
     date: "2026-08-26",
-    direction: "MP",
-    lane: "L1",
-    chainageFrom: 62,
-    chainageTo: 94.4,
-    remarks: "Classified volume count",
-  },
-  {
-    id: "e5",
-    seq: 5,
-    date: "2026-08-26",
     direction: "PM",
     lane: "L1",
     chainageFrom: 60,
-    chainageTo: 94.4,
-    remarks: "Classified volume count",
-    needsVerification: true,
+    chainageTo: 94.6,
+  },
+
+  // 27 August 2026
+  {
+    id: "e5",
+    seq: 5,
+    date: "2026-08-27",
+    direction: "MP",
+    lane: "L3",
+    chainageFrom: 0,
+    chainageTo: 31,
   },
   {
     id: "e6",
     seq: 6,
     date: "2026-08-27",
     direction: "MP",
-    lane: "L3",
+    lane: "L2",
     chainageFrom: 0,
-    chainageTo: 31,
-    remarks: "Classified volume count",
+    chainageTo: 30,
+  },
+  {
+    id: "e7",
+    seq: 7,
+    date: "2026-08-27",
+    direction: "MP",
+    lane: "L2",
+    chainageFrom: 87,
+    chainageTo: 94.6,
   },
   {
     id: "e8",
@@ -116,42 +117,16 @@ export const collectionEntries: CollectionEntry[] = [
     date: "2026-08-27",
     direction: "MP",
     lane: "L1",
-    chainageFrom: 62.4,
-    chainageTo: 62.6,
-    remarks: "Short connecting segment, exact chainage to be confirmed",
-    needsVerification: true,
+    chainageFrom: 81,
+    chainageTo: 85,
   },
   {
     id: "e9",
     seq: 9,
     date: "2026-08-27",
-    direction: "MP",
-    lane: "L2",
-    chainageFrom: 85,
-    chainageTo: 94.4,
-    remarks: "Classified volume count",
-    needsVerification: true,
-  },
-  {
-    id: "e10",
-    seq: 10,
-    date: "2026-08-27",
     direction: "PM",
     lane: "L2",
-    chainageFrom: 59,
+    chainageFrom: 45,
     chainageTo: 82,
-    remarks: "Classified volume count",
-    needsVerification: true,
-  },
-  {
-    id: "e11",
-    seq: 11,
-    date: "2026-08-27",
-    direction: "PM",
-    lane: "L2",
-    chainageFrom: 34,
-    chainageTo: 45,
-    remarks: "Classified volume count",
-    needsVerification: true,
   },
 ];
