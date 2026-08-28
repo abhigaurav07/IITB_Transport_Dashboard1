@@ -10,9 +10,12 @@ import {
 } from "@/lib/collection-utils";
 import { LANES, PROJECT, laneCode } from "@/data/project";
 
-// 1 box = 1 km of chainage. At 94.6 km this renders ~95 boxes per lane.
-const CELL_SIZE_KM = 1;
-const CELL_WIDTH_PX = 16;
+// 1 box = 200 m of chainage, so every 1 km stretch of road is 5 boxes wide.
+// This matches standard engineering chainage marking (0+000, 0+200, 0+400,
+// ... 1+000, 1+200, ...) and gives each box's own left edge a precise,
+// unambiguous chainage value. At 94.6 km this renders 473 boxes per lane.
+const CELL_SIZE_KM = 0.2;
+const CELL_WIDTH_PX = 10;
 const LABEL_WIDTH_PX = 196;
 
 // Lanes are always listed Inner, Middle, Outer in project.ts. Mumbai to
@@ -54,8 +57,9 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
         <div>
           <h3 className="text-sm font-semibold text-ink">Lane-wise Survey Status</h3>
           <p className="text-xs text-ink-muted">
-            Each box represents {CELL_SIZE_KM} km of chainage, from {formatChainage(0)} to {formatChainage(totalKm)}.
-            Hover a box for detail.
+            Chainage surveyed per lane, per direction. Each box represents {Math.round(CELL_SIZE_KM * 1000)} m of
+            chainage, marked from {formatChainage(0)} at Mumbai to {formatChainage(totalKm)} at Pune. Hover a box
+            for detail.
           </p>
         </div>
         <Legend />
@@ -127,20 +131,21 @@ function RulerRow({
     <>
       <div className={`sticky left-0 z-10 bg-surface ${borderClass} border-line`} />
       {boundaries.map((b, i) => {
-        // Every 1 km gets its own label, rotated so a two digit number
-        // still fits inside a 16px wide column without overlapping its
-        // neighbours. Multiples of 10 are emphasized so the axis is still
-        // easy to scan at a glance.
-        const isMajor = i % 10 === 0;
+        // Every box's left edge is marked with its exact chainage, in the
+        // standard km+m form, so there is never any doubt about where a box
+        // sits on the 0 to totalKm reference line. The whole-km marks
+        // (0+000, 1+000, 2+000, ...) are emphasized as the primary scale;
+        // the 200 m marks in between are lighter, secondary ticks.
+        const isWholeKm = Math.abs(b.from - Math.round(b.from)) < 1e-6;
         return (
-          <div key={i} className={`relative h-8 ${borderClass} border-line`}>
+          <div key={i} className={`relative h-14 ${borderClass} border-line`}>
             <span
-              className={`absolute left-1/2 top-0.5 origin-top-left whitespace-nowrap text-[8px] leading-none tabular-nums ${
-                isMajor ? "font-semibold text-ink" : "text-ink-muted"
+              className={`absolute left-1/2 top-0.5 origin-top-left whitespace-nowrap text-[7px] leading-none tabular-nums ${
+                isWholeKm ? "font-semibold text-ink" : "text-ink-muted"
               }`}
               style={{ transform: "rotate(90deg)" }}
             >
-              {Math.round(b.from)}
+              {formatChainage(b.from)}
             </span>
           </div>
         );

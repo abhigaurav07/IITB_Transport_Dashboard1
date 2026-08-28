@@ -57,15 +57,10 @@ export default function DataCollectionPage() {
       </section>
 
       <section>
-        <SectionTitle title="Lane-wise Progress" subtitle="Chainage surveyed per lane, per direction" />
         <LaneProgressPanel rows={rows} />
       </section>
 
       <section>
-        <SectionTitle
-          title="Daily Collection Log"
-          subtitle="Every recorded chainage segment, filterable by direction and lane"
-        />
         <CollectionLogTable entries={collectionEntries} />
       </section>
     </div>
