@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { collectionEntries, IS_SAMPLE_DATA } from "@/data/collection-entries";
+import { collectionEntries, PENDING_VERIFICATION_NOTE } from "@/data/collection-entries";
 import { PROJECT } from "@/data/project";
 import {
   computeAllProgress,
@@ -13,18 +13,19 @@ import CollectionLogTable from "@/components/data-collection/CollectionLogTable"
 import { WarningIcon } from "@/components/icons";
 
 export const metadata: Metadata = {
-  title: "Data Collection — Daily Tracker",
+  title: "Data Collection: Daily Tracker",
 };
 
 export default function DataCollectionPage() {
   const rows = computeAllProgress(collectionEntries);
   const summary = computeProjectSummary(collectionEntries);
+  const pendingVerification = collectionEntries.some((e) => e.needsVerification);
 
   return (
     <div className="space-y-6 lg:space-y-8">
       <PageHeader summary={summary} />
 
-      {IS_SAMPLE_DATA ? <SampleDataNotice /> : null}
+      {pendingVerification ? <PendingVerificationNotice /> : null}
 
       <section>
         <SectionTitle title="Progress Summary" />
@@ -48,7 +49,7 @@ export default function DataCollectionPage() {
           />
           <StatCard
             label="Est. Completion"
-            value={summary.estRemainingDays !== null ? `~${summary.estRemainingDays} days` : "—"}
+            value={summary.estRemainingDays !== null ? `~${summary.estRemainingDays} days` : "Not available"}
             sublabel="at current pace"
             tone="warning"
           />
@@ -63,7 +64,7 @@ export default function DataCollectionPage() {
       <section>
         <SectionTitle
           title="Daily Collection Log"
-          subtitle="Every recorded chainage segment — filterable by direction and lane"
+          subtitle="Every recorded chainage segment, filterable by direction and lane"
         />
         <CollectionLogTable entries={collectionEntries} />
       </section>
@@ -80,7 +81,8 @@ function PageHeader({ summary }: { summary: ProjectSummary }) {
           Daily Traffic Data Collection Tracker
         </h1>
         <p className="mt-1 text-sm text-ink-muted">
-          {PROJECT.name} · {PROJECT.laneConfiguration} · Chainage 0 – {PROJECT.totalChainageKm} km
+          {PROJECT.shortName} &middot; {PROJECT.laneConfiguration} &middot; Chainage 0 to {PROJECT.totalChainageKm}{" "}
+          km
         </p>
       </div>
       <div className="text-left lg:text-right">
@@ -102,16 +104,13 @@ function SectionTitle({ title, subtitle }: { title: string; subtitle?: string })
   );
 }
 
-function SampleDataNotice() {
+function PendingVerificationNotice() {
   return (
     <div className="flex items-start gap-3 rounded-lg border border-warning/25 bg-warning-50 px-4 py-3 text-sm text-warning">
       <WarningIcon className="mt-0.5 h-4.5 w-4.5 shrink-0" />
       <div>
-        <p className="font-medium">Sample data — for layout review only</p>
-        <p className="text-warning/80">
-          The entries below are placeholders so the page can be reviewed with realistic content. Send the day&apos;s
-          real chainage figures and this will be replaced with the actual survey record.
-        </p>
+        <p className="font-medium">Some entries are pending verification</p>
+        <p className="text-warning/80">{PENDING_VERIFICATION_NOTE}</p>
       </div>
     </div>
   );

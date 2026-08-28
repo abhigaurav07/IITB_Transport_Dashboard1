@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppShell from "@/components/layout/AppShell";
+import { PROJECT } from "@/data/project";
 
 export const metadata: Metadata = {
   title: {
-    default: "Mumbai–Pune Expressway | Project Dashboard",
-    template: "%s · Mumbai–Pune Expressway",
+    default: `${PROJECT.shortName} | Project Dashboard`,
+    template: `%s | ${PROJECT.shortName}`,
   },
-  description:
-    "Traffic and transportation data collection, analysis and reporting dashboard for the Mumbai–Pune Expressway study.",
+  description: `${PROJECT.fullName}.`,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

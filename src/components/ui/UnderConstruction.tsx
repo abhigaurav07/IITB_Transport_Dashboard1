@@ -15,10 +15,10 @@ export default function UnderConstruction({
       <h2 className="text-base font-semibold text-ink">{title}</h2>
       <p className="mt-1.5 max-w-sm text-sm text-ink-muted">
         {description ??
-          "This module is part of the planned dashboard and hasn't been built yet. It will follow the same design system once its workflow is defined."}
+          "This module is part of the planned dashboard and has not been built yet. It will follow the same design system once its workflow is defined."}
       </p>
       <span className="mt-5 inline-flex items-center rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-500">
-        Prototype — Under Construction
+        Under Construction
       </span>
     </div>
   );

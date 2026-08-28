@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /*
- * Design tokens for the Mumbai–Pune Expressway project dashboard.
- * A single, deliberately light, formal/industrial palette — no
+ * Design tokens for the Mumbai-Pune Expressway project dashboard.
+ * A single, deliberately light, formal industrial palette. No
  * automatic dark mode, matching a report-style engineering tool.
  */
 @theme {

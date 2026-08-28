@@ -10,9 +10,9 @@ export default function OverviewPage() {
         <p className="text-xs font-semibold uppercase tracking-wide text-primary">Project Dashboard</p>
         <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">{PROJECT.name}</h1>
         <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-          Traffic and transportation data collection, analysis and reporting workspace for the{" "}
-          {PROJECT.totalChainageKm} km, {PROJECT.laneConfiguration} Mumbai–Pune Expressway study. Select a
-          module below to continue.
+          Traffic and transportation data collection, analysis and reporting workspace for the {PROJECT.name}{" "}
+          study, covering {PROJECT.totalChainageKm} km as a {PROJECT.laneConfiguration}. Select a module below
+          to continue.
         </p>
       </div>
 

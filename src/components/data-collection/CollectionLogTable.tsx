@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 import type { CollectionEntry, DirectionId, LaneId } from "@/lib/types";
-import { DIRECTIONS, LANES } from "@/data/project";
+import { DIRECTIONS, LANES, laneCodeLabel } from "@/data/project";
 import { formatDate } from "@/lib/collection-utils";
 
-type SortKey = "date" | "chainageFrom" | "length";
+type SortKey = "seq" | "date" | "chainageFrom" | "length";
 type SortDir = "asc" | "desc";
 
 const selectClasses =
@@ -14,8 +14,8 @@ const selectClasses =
 export default function CollectionLogTable({ entries }: { entries: CollectionEntry[] }) {
   const [direction, setDirection] = useState<DirectionId | "all">("all");
   const [lane, setLane] = useState<LaneId | "all">("all");
-  const [sortKey, setSortKey] = useState<SortKey>("date");
-  const [sortDir, setSortDir] = useState<SortDir>("desc");
+  const [sortKey, setSortKey] = useState<SortKey>("seq");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
 
   const filtered = useMemo(() => {
     let rows = entries;
@@ -24,7 +24,8 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
 
     return [...rows].sort((a, b) => {
       let cmp = 0;
-      if (sortKey === "date") cmp = a.date.localeCompare(b.date);
+      if (sortKey === "seq") cmp = a.seq - b.seq;
+      else if (sortKey === "date") cmp = a.date.localeCompare(b.date);
       else if (sortKey === "chainageFrom") cmp = a.chainageFrom - b.chainageFrom;
       else cmp = a.chainageTo - a.chainageFrom - (b.chainageTo - b.chainageFrom);
       return sortDir === "asc" ? cmp : -cmp;
@@ -41,7 +42,6 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
   }
 
   const directionLabel = (id: DirectionId) => DIRECTIONS.find((d) => d.id === id)?.label ?? id;
-  const laneLabel = (id: LaneId) => LANES.find((l) => l.id === id)?.label ?? id;
   const filtersActive = direction !== "all" || lane !== "all";
 
   return (
@@ -109,11 +109,12 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
       ) : (
         <div className="overflow-x-auto [scrollbar-width:thin]">
           <p className="px-4 pb-1.5 pt-2 text-[11px] text-ink-muted lg:hidden">
-            Swipe left for chainage, length, team &amp; remarks →
+            Swipe left to see chainage, length, team and remarks →
           </p>
-          <table className="w-full min-w-[720px] text-sm">
+          <table className="w-full min-w-[820px] text-sm">
             <thead>
               <tr className="border-b border-line bg-canvas/60 text-left text-[11px] font-semibold uppercase tracking-wide text-ink-muted">
+                <SortableTh label="#" active={sortKey === "seq"} dir={sortDir} onClick={() => toggleSort("seq")} />
                 <SortableTh label="Date" active={sortKey === "date"} dir={sortDir} onClick={() => toggleSort("date")} />
                 <th className="px-4 py-2.5">Direction</th>
                 <th className="px-4 py-2.5">Lane</th>
@@ -136,17 +137,29 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
             <tbody>
               {filtered.map((e) => (
                 <tr key={e.id} className="border-b border-line last:border-0 hover:bg-canvas/40">
+                  <td className="whitespace-nowrap px-4 py-2.5 tabular-nums font-medium text-ink-muted">
+                    #{e.seq}
+                  </td>
                   <td className="whitespace-nowrap px-4 py-2.5 tabular-nums text-ink">{formatDate(e.date)}</td>
                   <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">{directionLabel(e.direction)}</td>
-                  <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">{laneLabel(e.lane)}</td>
+                  <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">
+                    {laneCodeLabel(e.direction, e.lane)}
+                  </td>
                   <td className="whitespace-nowrap px-4 py-2.5 tabular-nums text-ink-muted">
-                    Ch. {e.chainageFrom.toFixed(1)} – {e.chainageTo.toFixed(1)}
+                    Chainage {e.chainageFrom.toFixed(1)} to {e.chainageTo.toFixed(1)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 tabular-nums font-medium text-ink">
                     {(e.chainageTo - e.chainageFrom).toFixed(1)} km
                   </td>
-                  <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">{e.team ?? "—"}</td>
-                  <td className="px-4 py-2.5 text-ink-muted">{e.remarks ?? "—"}</td>
+                  <td className="whitespace-nowrap px-4 py-2.5 text-ink-muted">{e.team ?? "Not specified"}</td>
+                  <td className="px-4 py-2.5 text-ink-muted">
+                    {e.remarks ?? "No remarks"}
+                    {e.needsVerification ? (
+                      <span className="ml-2 inline-flex items-center rounded-full bg-warning-50 px-2 py-0.5 text-[10px] font-medium text-warning">
+                        Pending verification
+                      </span>
+                    ) : null}
+                  </td>
                 </tr>
               ))}
             </tbody>

@@ -7,19 +7,20 @@ import {
   type ChainageCellBounds,
   type LaneDirectionProgress,
 } from "@/lib/collection-utils";
-import { DIRECTIONS, LANES, PROJECT } from "@/data/project";
+import { DIRECTIONS, LANES, PROJECT, laneCode } from "@/data/project";
 
 // 1 box = 1 km of chainage. At 94.4 km this renders ~95 boxes per lane.
 const CELL_SIZE_KM = 1;
 const CELL_WIDTH_PX = 16;
-const LABEL_WIDTH_PX = 176;
+const LABEL_WIDTH_PX = 196;
 
-// Lanes are always listed Outer→Middle→Inner in project.ts. Mumbai→Pune's
-// stack keeps that order so its Inner lane sits nearest the median divider;
-// Pune→Mumbai's stack is reversed so *its* Inner lane also sits nearest the
-// median — mirroring the physical road cross-section in the sketch.
-const MP_LANE_ORDER: LaneId[] = ["L1", "L2", "L3"];
-const PM_LANE_ORDER: LaneId[] = ["L3", "L2", "L1"];
+// Lanes are always listed Inner, Middle, Outer in project.ts. Mumbai to
+// Pune's stack is reversed to Outer, Middle, Inner so its Inner lane sits
+// nearest the median divider; Pune to Mumbai's stack keeps Inner, Middle,
+// Outer so its Inner lane also sits nearest the median, mirroring the
+// physical road cross-section (L1 and R1 both run alongside the median).
+const MP_LANE_ORDER: LaneId[] = ["L3", "L2", "L1"];
+const PM_LANE_ORDER: LaneId[] = ["L1", "L2", "L3"];
 
 const STATUS_COLOR: Record<CellStatus, string> = {
   covered: "bg-success",
@@ -56,14 +57,13 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
         <div>
           <h3 className="text-sm font-semibold text-ink">Lane-wise Survey Status</h3>
           <p className="text-xs text-ink-muted">
-            Each box = {CELL_SIZE_KM} km of chainage &middot; Chainage 0 – {totalKm} km &middot; hover a box for
-            detail
+            Each box represents {CELL_SIZE_KM} km of chainage, from 0 to {totalKm} km. Hover a box for detail.
           </p>
         </div>
         <Legend />
       </div>
 
-      <p className="mb-1.5 text-[11px] text-ink-muted lg:hidden">Swipe left / right to see the full chainage →</p>
+      <p className="mb-1.5 text-[11px] text-ink-muted lg:hidden">Swipe left or right to see the full chainage →</p>
 
       <div className="overflow-x-auto rounded-lg border border-line [scrollbar-width:thin]">
         <div className="inline-grid" style={{ gridTemplateColumns }}>
@@ -73,6 +73,7 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
           {MP_LANE_ORDER.map((laneId) => (
             <LaneRow
               key={`MP-${laneId}`}
+              directionId="MP"
               lane={laneById(laneId)}
               row={rowFor("MP", laneId)}
               cells={computeChainageCells(rowFor("MP", laneId).coveredIntervals, boundaries)}
@@ -85,6 +86,7 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
           {PM_LANE_ORDER.map((laneId) => (
             <LaneRow
               key={`PM-${laneId}`}
+              directionId="PM"
               lane={laneById(laneId)}
               row={rowFor("PM", laneId)}
               cells={computeChainageCells(rowFor("PM", laneId).coveredIntervals, boundaries)}
@@ -167,17 +169,28 @@ function MedianRow({ colCount }: { colCount: number }) {
   );
 }
 
-function LaneRow({ lane, row, cells }: { lane: Lane; row: LaneDirectionProgress; cells: ChainageCell[] }) {
+function LaneRow({
+  directionId,
+  lane,
+  row,
+  cells,
+}: {
+  directionId: DirectionId;
+  lane: Lane;
+  row: LaneDirectionProgress;
+  cells: ChainageCell[];
+}) {
+  const label = `${lane.label} (${laneCode(directionId, lane.id)})`;
   return (
     <>
-      <div className="sticky left-0 z-10 flex items-center justify-between gap-2 border-b border-line bg-surface px-3 py-1 text-xs">
-        <span className="font-medium text-ink">{lane.label}</span>
-        <span className="tabular-nums text-ink-muted">{row.percent.toFixed(0)}%</span>
+      <div className="sticky left-0 z-10 flex min-w-0 items-center justify-between gap-2 border-b border-line bg-surface px-3 py-1 text-xs">
+        <span className="truncate font-medium text-ink">{label}</span>
+        <span className="shrink-0 tabular-nums text-ink-muted">{row.percent.toFixed(0)}%</span>
       </div>
       {cells.map((cell, i) => (
         <div
           key={i}
-          title={`${lane.label} · Ch. ${cell.from.toFixed(1)}–${cell.to.toFixed(1)} km · ${STATUS_LABEL[cell.status]}${
+          title={`${label} · Chainage ${cell.from.toFixed(1)} to ${cell.to.toFixed(1)} km · ${STATUS_LABEL[cell.status]}${
             cell.status === "partial" ? ` (${cell.percent.toFixed(0)}%)` : ""
           }`}
           className={`h-5 border-b border-r border-white/50 ${STATUS_COLOR[cell.status]}`}

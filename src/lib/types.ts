@@ -1,5 +1,5 @@
 // Core domain types for the Data Collection module.
-// Keep this file framework-agnostic — no React/Next imports here.
+// Keep this file framework agnostic. No React/Next imports here.
 
 export type DirectionId = "MP" | "PM";
 export type LaneId = "L1" | "L2" | "L3";
@@ -34,6 +34,12 @@ export interface Lane {
  */
 export interface CollectionEntry {
   id: string;
+  /**
+   * Stable reference number shown on the tracker as "#<seq>" so a logged
+   * segment can be pointed to in conversation or in a field report the
+   * same way it is marked on the survey record.
+   */
+  seq: number;
   /** ISO date, "YYYY-MM-DD" */
   date: string;
   direction: DirectionId;
@@ -46,4 +52,6 @@ export interface CollectionEntry {
   team?: string;
   /** Optional free-text note (equipment used, conditions, etc.) */
   remarks?: string;
+  /** True while this entry's chainage still needs confirmation against the source record. */
+  needsVerification?: boolean;
 }

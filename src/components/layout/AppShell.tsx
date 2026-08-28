@@ -3,9 +3,10 @@
 import { useEffect, useState } from "react";
 import SidebarNav from "./SidebarNav";
 import { MenuIcon, CloseIcon } from "@/components/icons";
+import { PROJECT } from "@/data/project";
 
 // Today's date only ever needs to be right in the browser, and it may
-// legitimately differ from the server's render if the page was cached —
+// legitimately differ from the server's render if the page was cached,
 // so it's read directly at render time and the mismatch is intentionally
 // suppressed on that one text node (React's documented pattern for
 // unavoidable server/client differences like a live clock or date).
@@ -73,7 +74,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </button>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs text-ink-muted">
-              Mumbai–Pune Expressway · Traffic &amp; Transportation Study
+              {PROJECT.shortName} &middot; Traffic and Transportation Study
             </p>
           </div>
           <div className="hidden text-right sm:block">
@@ -89,8 +90,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </main>
 
         <footer className="border-t border-line px-4 py-4 text-center text-[11px] text-ink-muted lg:px-8">
-          Mumbai–Pune Expressway Project Dashboard — internal engineering tool. Data Collection module live; other
-          modules under construction.
+          {PROJECT.shortName} Project Dashboard, an internal engineering tool. The Data Collection module is live;
+          the remaining modules are under construction.
         </footer>
       </div>
     </div>

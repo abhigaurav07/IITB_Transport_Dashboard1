@@ -28,7 +28,7 @@ export function coveredLength(intervals: Interval[]): number {
   return mergeIntervals(intervals).reduce((sum, iv) => sum + (iv.to - iv.from), 0);
 }
 
-/** The complement of `covered` within [0, totalKm] — the un-surveyed stretches. */
+/** The complement of `covered` within [0, totalKm]: the un-surveyed stretches. */
 export function gapIntervals(covered: Interval[], totalKm: number): Interval[] {
   const merged = mergeIntervals(covered);
   const gaps: Interval[] = [];

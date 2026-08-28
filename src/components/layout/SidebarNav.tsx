@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MODULES } from "./nav-items";
 import { RoadIcon } from "@/components/icons";
+import { PROJECT } from "@/data/project";
 
 export default function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
@@ -49,8 +50,8 @@ export default function SidebarNav({ onNavigate }: { onNavigate?: () => void }) 
       </nav>
 
       <div className="border-t border-white/10 px-5 py-4">
-        <p className="text-[11px] text-slate-500">Mumbai–Pune Expressway</p>
-        <p className="text-[11px] text-slate-600">v0.1 · Prototype build</p>
+        <p className="text-[11px] text-slate-500">{PROJECT.shortName}</p>
+        <p className="text-[11px] text-slate-600">v0.1 &middot; Prototype build</p>
       </div>
     </div>
   );
