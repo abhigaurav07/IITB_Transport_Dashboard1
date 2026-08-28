@@ -20,7 +20,7 @@ export default function StatCard({
 }) {
   return (
     <div className="rounded-xl border border-line bg-surface p-4 lg:p-5">
-      <p className="text-[11px] font-semibold uppercase tracking-wide text-ink-muted">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">{label}</p>
       <p className={`mt-2 text-2xl font-semibold tabular-nums leading-none lg:text-3xl ${TONE_TEXT[tone]}`}>
         {value}
       </p>

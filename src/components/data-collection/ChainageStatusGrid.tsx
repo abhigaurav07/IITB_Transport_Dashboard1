@@ -55,8 +55,8 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
     <div className="rounded-xl border border-line bg-surface p-4 lg:p-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-sm font-semibold text-ink">Lane-wise Survey Status</h3>
-          <p className="text-xs text-ink-muted">
+          <h3 className="text-base font-semibold text-ink">Lane-wise Survey Status</h3>
+          <p className="text-sm text-ink-muted">
             Chainage surveyed per lane, per direction. Each box represents {Math.round(CELL_SIZE_KM * 1000)} m of
             chainage, marked from {formatChainage(0)} at Mumbai to {formatChainage(totalKm)} at Pune. Hover a box
             for detail.
@@ -133,6 +133,13 @@ function RulerRow({
   const borderClass = edge === "bottom" ? "border-b" : "border-t";
   const tickPos = edge === "bottom" ? "bottom-0" : "top-0";
   const labelPos = edge === "bottom" ? "bottom-2.5" : "top-2.5";
+  // Both rulers anchor their tick and label at the edge nearest the grid,
+  // then grow the label AWAY from the grid: the floor ruler (edge="top",
+  // grid above it) rotates clockwise so text runs downward into its own
+  // free space, while the ceiling ruler (edge="bottom", grid below it)
+  // rotates counter-clockwise so text runs upward into its free space
+  // instead of continuing down into the coloured boxes.
+  const rotateDeg = edge === "bottom" ? -90 : 90;
   return (
     <>
       <div className={`sticky left-0 z-10 bg-surface ${borderClass} border-line`} />
@@ -155,7 +162,7 @@ function RulerRow({
               className={`absolute left-0.5 ${labelPos} origin-top-left whitespace-nowrap text-[7px] leading-none tabular-nums ${
                 isWholeKm ? "font-semibold text-ink" : "text-ink-muted"
               }`}
-              style={{ transform: "rotate(90deg)" }}
+              style={{ transform: `rotate(${rotateDeg}deg)` }}
             >
               {formatChainage(b.from)}
             </span>

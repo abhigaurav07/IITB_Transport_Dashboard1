@@ -47,7 +47,7 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
   return (
     <div className="rounded-xl border border-line bg-surface">
       <div className="flex flex-wrap items-center gap-2.5 border-b border-line px-4 py-3 lg:px-5">
-        <h3 className="mr-auto text-sm font-semibold text-ink">Daily Collection Log</h3>
+        <h3 className="mr-auto text-base font-semibold text-ink">Daily Collection Log</h3>
 
         <label className="sr-only" htmlFor="filter-direction">
           Filter by direction
