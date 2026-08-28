@@ -7,7 +7,7 @@ import {
   type ChainageCellBounds,
   type LaneDirectionProgress,
 } from "@/lib/collection-utils";
-import { DIRECTIONS, LANES, PROJECT, laneCode } from "@/data/project";
+import { LANES, PROJECT, laneCode } from "@/data/project";
 
 // 1 box = 1 km of chainage. At 94.4 km this renders ~95 boxes per lane.
 const CELL_SIZE_KM = 1;
@@ -38,10 +38,6 @@ function laneById(id: LaneId): Lane {
   return LANES.find((l) => l.id === id)!;
 }
 
-function directionLabel(id: DirectionId): string {
-  return DIRECTIONS.find((d) => d.id === id)?.label ?? id;
-}
-
 export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgress[] }) {
   const totalKm = PROJECT.totalChainageKm;
   const boundaries = chainageCellBoundaries(totalKm, CELL_SIZE_KM);
@@ -67,9 +63,9 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
 
       <div className="overflow-x-auto rounded-lg border border-line [scrollbar-width:thin]">
         <div className="inline-grid" style={{ gridTemplateColumns }}>
+          <EndpointLabelRow colCount={colCount} />
           <RulerRow boundaries={boundaries} edge="bottom" />
 
-          <DirectionHeaderRow label={directionLabel("MP")} colCount={colCount} />
           {MP_LANE_ORDER.map((laneId) => (
             <LaneRow
               key={`MP-${laneId}`}
@@ -82,7 +78,6 @@ export default function ChainageStatusGrid({ rows }: { rows: LaneDirectionProgre
 
           <MedianRow colCount={colCount} />
 
-          <DirectionHeaderRow label={directionLabel("PM")} colCount={colCount} />
           {PM_LANE_ORDER.map((laneId) => (
             <LaneRow
               key={`PM-${laneId}`}
@@ -130,14 +125,21 @@ function RulerRow({
     <>
       <div className={`sticky left-0 z-10 bg-surface ${borderClass} border-line`} />
       {boundaries.map((b, i) => {
-        const showLabel = i % 10 === 0;
+        // Every 1 km gets its own label, rotated so a two digit number
+        // still fits inside a 16px wide column without overlapping its
+        // neighbours. Multiples of 10 are emphasized so the axis is still
+        // easy to scan at a glance.
+        const isMajor = i % 10 === 0;
         return (
-          <div key={i} className={`relative h-4 ${borderClass} border-line`}>
-            {showLabel ? (
-              <span className="absolute left-0 top-0 whitespace-nowrap text-[9px] leading-none tabular-nums text-ink-muted">
-                {Math.round(b.from)}
-              </span>
-            ) : null}
+          <div key={i} className={`relative h-8 ${borderClass} border-line`}>
+            <span
+              className={`absolute left-1/2 top-0.5 origin-top-left whitespace-nowrap text-[8px] leading-none tabular-nums ${
+                isMajor ? "font-semibold text-ink" : "text-ink-muted"
+              }`}
+              style={{ transform: "rotate(90deg)" }}
+            >
+              {Math.round(b.from)}
+            </span>
           </div>
         );
       })}
@@ -145,14 +147,18 @@ function RulerRow({
   );
 }
 
-function DirectionHeaderRow({ label, colCount }: { label: string; colCount: number }) {
+function EndpointLabelRow({ colCount }: { colCount: number }) {
   return (
-    <div
-      style={{ gridColumn: `1 / span ${colCount + 1}` }}
-      className="border-y border-line bg-canvas px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink-muted"
-    >
-      {label}
-    </div>
+    <>
+      <div className="sticky left-0 z-10 bg-surface" />
+      <div
+        style={{ gridColumn: `2 / span ${colCount}` }}
+        className="flex items-center justify-between border-b border-line bg-canvas px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-ink-muted"
+      >
+        <span>Mumbai (0 km)</span>
+        <span>Pune ({PROJECT.totalChainageKm} km)</span>
+      </div>
+    </>
   );
 }
 
