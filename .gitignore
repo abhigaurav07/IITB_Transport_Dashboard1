@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local cleanup staging (superseded files kept here instead of deleted,
+# never part of the project itself)
+_to_delete/
+**/_to_delete/

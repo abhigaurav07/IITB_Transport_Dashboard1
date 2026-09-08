@@ -71,7 +71,15 @@ export function computeLaneDirectionProgress(
   totalKm: number = PROJECT.totalChainageKm
 ): LaneDirectionProgress {
   const laneEntries = getEntriesFor(entries, directionId, laneId);
-  const rawIntervals = laneEntries.map((e) => ({ from: e.chainageFrom, to: e.chainageTo }));
+  // Pune to Mumbai entries are often logged with chainage decreasing (the
+  // surveyor records it in the direction actually driven), so chainageFrom
+  // can be the larger number. The interval math below only cares about the
+  // physical span, so it always normalizes to (min, max) here rather than
+  // assuming chainageFrom < chainageTo.
+  const rawIntervals = laneEntries.map((e) => ({
+    from: Math.min(e.chainageFrom, e.chainageTo),
+    to: Math.max(e.chainageFrom, e.chainageTo),
+  }));
   const covered = mergeIntervals(rawIntervals);
   const coveredKm = coveredLength(rawIntervals);
   const remainingKm = Math.max(0, totalKm - coveredKm);

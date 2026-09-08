@@ -26,8 +26,14 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
       let cmp = 0;
       if (sortKey === "seq") cmp = a.seq - b.seq;
       else if (sortKey === "date") cmp = a.date.localeCompare(b.date);
-      else if (sortKey === "chainageFrom") cmp = a.chainageFrom - b.chainageFrom;
-      else cmp = a.chainageTo - a.chainageFrom - (b.chainageTo - b.chainageFrom);
+      // Some entries are logged with chainage decreasing (surveyed Pune to
+      // Mumbai), so sorting and length both use the physical span (min to
+      // max) rather than assuming chainageFrom is always the smaller value.
+      else if (sortKey === "chainageFrom") {
+        cmp = Math.min(a.chainageFrom, a.chainageTo) - Math.min(b.chainageFrom, b.chainageTo);
+      } else {
+        cmp = Math.abs(a.chainageTo - a.chainageFrom) - Math.abs(b.chainageTo - b.chainageFrom);
+      }
       return sortDir === "asc" ? cmp : -cmp;
     });
   }, [entries, direction, lane, sortKey, sortDir]);
@@ -148,7 +154,7 @@ export default function CollectionLogTable({ entries }: { entries: CollectionEnt
                     Chainage {formatChainage(e.chainageFrom)} to {formatChainage(e.chainageTo)}
                   </td>
                   <td className="whitespace-nowrap px-4 py-2.5 tabular-nums font-medium text-ink">
-                    {(e.chainageTo - e.chainageFrom).toFixed(1)} km
+                    {Math.abs(e.chainageTo - e.chainageFrom).toFixed(1)} km
                   </td>
                   <td className="px-4 py-2.5 text-ink-muted">
                     {e.remarks ? e.remarks : <span className="italic text-ink-muted/60">No remarks</span>}
