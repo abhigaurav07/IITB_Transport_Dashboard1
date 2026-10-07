@@ -90,8 +90,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </main>
 
         <footer className="border-t border-line px-4 py-4 text-center text-[11px] text-ink-muted lg:px-8">
-          {PROJECT.shortName} Project Dashboard, an internal engineering tool. The Data Collection module is live;
-          the remaining modules are under construction.
+          {PROJECT.shortName} Project Dashboard, an internal engineering tool. The Data Collection and Road Roughness (IRI)
+          modules are live; the remaining modules are under construction.
         </footer>
       </div>
     </div>

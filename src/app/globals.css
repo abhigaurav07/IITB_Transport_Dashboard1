@@ -47,3 +47,32 @@ body {
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
+
+/*
+ * Chainage slider in the IRI drive-through: a transparent track that sits over the
+ * IRI colour strip, with a slim dark thumb.
+ */
+.iri-range::-webkit-slider-runnable-track { height: 28px; background: transparent; }
+.iri-range::-moz-range-track { height: 28px; background: transparent; }
+.iri-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 9px;
+  height: 30px;
+  margin-top: -1px;
+  border-radius: 5px;
+  background: var(--color-ink);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--color-ink);
+}
+.iri-range::-moz-range-thumb {
+  width: 9px;
+  height: 30px;
+  border-radius: 5px;
+  background: var(--color-ink);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px var(--color-ink);
+}
+.iri-range:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 4px; border-radius: 6px; }
+
+/* Leaflet on the dashboard canvas: match the app font and keep controls compact. */
+.leaflet-container { font-family: var(--font-sans); background: #f1f5f9; }

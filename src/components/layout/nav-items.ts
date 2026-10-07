@@ -14,9 +14,9 @@ export const MODULES: ModuleNavItem[] = [
   },
   {
     href: "/module-1",
-    label: "Module 1",
-    description: "Content and scope for this module will be provided at a later stage.",
-    status: "construction",
+    label: "Road Roughness (IRI)",
+    description: "Predicted IRI of every 50 m block, averaged across drivers, with map, profile and drive-through views.",
+    status: "live",
   },
   {
     href: "/module-2",
