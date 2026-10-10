@@ -250,8 +250,8 @@ export default function IriModule() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Module 1 · Road roughness</p>
-          <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">Predicted IRI assessment</h1>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Module 1 · Submodule 1</p>
+          <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">KASRA Route IRI</h1>
           <p className="mt-2 max-w-3xl text-sm text-ink-muted">
             Predicted International Roughness Index (IRI) for every block of about 50 m along a route. Each block shows the average of all drivers who covered it. Add driver files under Data input and every result updates automatically.
           </p>

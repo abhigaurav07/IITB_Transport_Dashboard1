@@ -3,6 +3,7 @@
 import { useMemo, type PointerEvent } from "react";
 import { Card, useWidth } from "./ui";
 import { BlockLine } from "./BlockReadout";
+import { CoverageChart, CoverageTable } from "./CoverageChart";
 import type { View } from "./view";
 import { fmtCh, tickStep } from "@/lib/iri/format";
 
@@ -114,6 +115,7 @@ export default function ProfileTab({ v }: { v: View }) {
   const selColor = v.selection === "avg" ? INK : route.members.find((m) => m.ds.id === v.selection)?.color ?? INK;
 
   return (
+    <div className="space-y-5">
     <Card title="Average IRI of each 50 m block along the chainage" subtitle="The black line is the arithmetic mean of all included drivers for each block. The grey band spans the lowest to the highest driver. Hover or tap to read any block.">
       <div className="mb-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-ink-muted">
         <span className="inline-flex items-center gap-2"><span className="h-0.5 w-5 bg-ink" />Average of all drivers (each 50 m block)</span>
@@ -153,5 +155,13 @@ export default function ProfileTab({ v }: { v: View }) {
       </div>
       <BlockLine v={v} />
     </Card>
+    <Card
+      title="Coverage by driver"
+      subtitle="Which part of the route each driver covered, and the chainage where each one started. Grey means not driven. Hover to move the selected block."
+    >
+      <CoverageChart v={v} />
+      <CoverageTable v={v} />
+    </Card>
+    </div>
   );
 }

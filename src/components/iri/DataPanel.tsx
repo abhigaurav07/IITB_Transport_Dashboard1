@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, type DragEvent } from "react";
-import { Button, FieldLabel, Tabs, td, tdNum, th, thNum, useWidth } from "./ui";
-import { ColorLegend } from "./Legend";
+import { useEffect, useMemo, useRef, useState, type DragEvent } from "react";
+import { Button, FieldLabel, Tabs, td, tdNum, th, thNum } from "./ui";
+import { CoverageChart } from "./CoverageChart";
 import type { View } from "./view";
 import { CloseIcon } from "@/components/icons";
 import type { Route, UploadedFile } from "@/lib/iri/types";
@@ -10,7 +10,6 @@ import { RATING_GROUPS } from "@/lib/iri/rating";
 import { computeChecks } from "@/lib/iri/checks";
 import { driverStats } from "@/lib/iri/stats";
 import { fmtCh, fmtDate } from "@/lib/iri/format";
-import { colorCss, NO_DATA } from "@/lib/iri/scale";
 
 export type PanelTab = "files" | "sum" | "basis";
 export interface Message {
@@ -292,78 +291,6 @@ function RouteName({ route, onRename }: { route: Route; onRename: (id: string, n
 function SummaryPanel({ v }: { v: View }) {
   const { route, rating } = v;
   const stats = useMemo(() => route.active.map((m) => driverStats(route, m, rating)), [route, rating]);
-  const [wrap, width] = useWidth<HTMLDivElement>();
-  const cv = useRef<HTMLCanvasElement>(null);
-  const L = 150;
-  const rows = route.active.length;
-  const rh = 30;
-  const H = 6 + rows * rh + 26;
-
-  const draw = useCallback(() => {
-    const c = cv.current;
-    if (!c || !width) return;
-    const dpr = window.devicePixelRatio || 1;
-    c.width = width * dpr;
-    c.height = H * dpr;
-    const ctx = c.getContext("2d");
-    if (!ctx) return;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, width, H);
-    const total = route.km[route.n - 1];
-    const R = 8;
-    const x = (km: number) => L + (km / total) * (width - L - R);
-    ctx.font = "12px Inter, system-ui, sans-serif";
-    ctx.textBaseline = "middle";
-    route.active.forEach((m, r) => {
-      const yy = 6 + r * rh;
-      ctx.fillStyle = NO_DATA;
-      ctx.fillRect(L, yy + 2, width - L - R, rh - 4);
-      for (let i = 0; i < route.n - 1; i++) {
-        const val = m.iri[i];
-        if (val == null) continue;
-        ctx.fillStyle = colorCss(val, v.color);
-        ctx.fillRect(x(route.km[i]), yy + 2, x(route.km[i + 1]) - x(route.km[i]) + 0.6, rh - 4);
-      }
-      ctx.fillStyle = v.selection === m.ds.id ? "#0f172a" : "#475569";
-      ctx.font = `${v.selection === m.ds.id ? "600 " : ""}12px Inter, system-ui, sans-serif`;
-      ctx.textAlign = "right";
-      let lb = m.label;
-      while (ctx.measureText(lb).width > L - 14 && lb.length > 6) lb = lb.slice(0, -2);
-      if (lb !== m.label) lb += "…";
-      ctx.fillText(lb, L - 10, yy + rh / 2);
-    });
-    ctx.fillStyle = "#64748b";
-    ctx.font = "12px Inter, system-ui, sans-serif";
-    ctx.textAlign = "center";
-    const step = total > 40 ? 10 : total > 15 ? 5 : total > 6 ? 2 : 1;
-    for (let k = 0; k <= Math.floor(total); k += step) ctx.fillText(fmtCh(k), Math.max(L + 14, x(k)), H - 10);
-    const cx = x(route.km[v.cur] + (v.cur < route.n - 1 ? (route.km[v.cur + 1] - route.km[v.cur]) / 2 : 0));
-    ctx.strokeStyle = "#0f172a";
-    ctx.globalAlpha = 0.75;
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(cx, 6);
-    ctx.lineTo(cx, 6 + rows * rh);
-    ctx.stroke();
-    ctx.globalAlpha = 1;
-  }, [route, v.color, v.cur, v.selection, width, H, rows]);
-  useEffect(() => draw(), [draw]);
-
-  const pick = (clientX: number) => {
-    const c = cv.current;
-    if (!c) return;
-    const r = c.getBoundingClientRect();
-    const km = ((clientX - r.left - L) / (r.width - L - 8)) * route.km[route.n - 1];
-    if (km < 0 || km > route.km[route.n - 1]) return;
-    let lo = 0;
-    let hi = route.n - 1;
-    while (lo < hi) {
-      const mid = (lo + hi) >> 1;
-      if (route.km[mid] <= km) lo = mid + 1;
-      else hi = mid;
-    }
-    v.setCur(Math.max(0, Math.min(route.n - 1, route.km[lo] <= km ? lo : lo - 1)));
-  };
 
   return (
     <div className="space-y-6">
@@ -409,17 +336,9 @@ function SummaryPanel({ v }: { v: View }) {
       <section>
         <h3 className="text-sm font-semibold text-ink">Coverage by block</h3>
         <p className="mt-0.5 text-xs text-ink-muted">One row per driver, one cell per block along the chainage. Grey cells were not driven. Hover to move the selected block.</p>
-        <div ref={wrap} className="mt-3 rounded-xl border border-line bg-surface p-3">
-          <canvas
-            ref={cv}
-            style={{ height: H, width: "100%" }}
-            className="block"
-            onPointerMove={(e) => pick(e.clientX)}
-            onPointerDown={(e) => pick(e.clientX)}
-            aria-label="Coverage of each driver along the chainage"
-          />
+        <div className="mt-3">
+          <CoverageChart v={v} />
         </div>
-        <ColorLegend color={v.color} rating={rating} />
       </section>
     </div>
   );

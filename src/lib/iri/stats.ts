@@ -97,6 +97,10 @@ export interface DriverStat {
   member: Member;
   date: string;
   startKm: number;
+  /** Chainage where the last block with a value ends. */
+  endKm: number;
+  /** Length of road with a value, in km. */
+  coveredKm: number;
   n: number;
   missing: number;
   mean: number;
@@ -108,12 +112,14 @@ export function driverStats(r: Route, m: Member, rating: Rating): DriverStat {
   let first = -1;
   let last = -1;
   const vals: number[] = [];
+  let covered = 0;
   for (let i = 0; i < r.n; i++) {
     const v = m.iri[i];
     if (v != null) {
       if (first < 0) first = i;
       last = i;
       vals.push(v);
+      if (i < r.n - 1) covered += r.km[i + 1] - r.km[i];
     }
   }
   const sorted = [...vals].sort((a, b) => a - b);
@@ -122,6 +128,8 @@ export function driverStats(r: Route, m: Member, rating: Rating): DriverStat {
     member: m,
     date: m.ds.date ? fmtDate(m.ds.date) : "not given",
     startKm: r.km[first],
+    endKm: r.km[Math.min(last + 1, r.n - 1)],
+    coveredKm: covered,
     n,
     missing: last - first + 1 - n,
     mean: vals.reduce((a, b) => a + b, 0) / n,

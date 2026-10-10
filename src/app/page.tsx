@@ -30,6 +30,7 @@ function ModuleCard({
   label,
   description,
   status,
+  submodules,
 }: (typeof MODULES)[number]) {
   return (
     <Link
@@ -50,6 +51,16 @@ function ModuleCard({
           )}
         </div>
         <p className="mt-2 text-xs text-ink-muted">{description}</p>
+        {submodules ? (
+          <ul className="mt-3 space-y-1 text-xs text-ink-muted">
+            {submodules.map((s) => (
+              <li key={s.href} className="flex items-center gap-2">
+                <span className="w-3 text-[11px] tabular-nums text-ink-muted/70">{s.number}</span>
+                {s.label}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
       <span className="mt-4 inline-flex items-center text-xs font-medium text-primary">
         {status === "live" ? "Open module" : "Preview"}
