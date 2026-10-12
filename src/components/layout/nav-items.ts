@@ -18,18 +18,17 @@ export interface ModuleNavItem {
 /** Submodules of Module 1 (Road Roughness). Shared by the sidebar, the hub page and the submodule bar. */
 export const MODULE_1_SUBMODULES: SubmoduleNavItem[] = [
   {
-    href: "/module-1/kasra-route-iri",
+    href: "/module-1/kasara-iri",
     number: "1",
-    label: "KASRA Route IRI",
-    description:
-      "Predicted IRI of every 50 m block on the KASRA route, averaged across drivers, with chainage profile, driver coverage, map and drive-through views.",
+    label: "KASARA IRI",
+    description: "Predicted IRI of every 50 m block, averaged across drivers.",
     status: "live",
   },
   {
-    href: "/module-1/submodule-2",
+    href: "/module-1/atal-setu-iri",
     number: "2",
-    label: "Submodule 2",
-    description: "Content and scope for this submodule will be provided at a later stage.",
+    label: "ATAL SETU IRI",
+    description: "Predicted IRI against validated NSV IRI.",
     status: "construction",
   },
 ];
@@ -44,7 +43,7 @@ export const MODULES: ModuleNavItem[] = [
   {
     href: "/module-1",
     label: "Road Roughness (IRI)",
-    description: "Road roughness analysis, organised in submodules. Submodule 1 is the KASRA route IRI viewer.",
+    description: "Road roughness (IRI) by route.",
     status: "live",
     submodules: MODULE_1_SUBMODULES,
   },

@@ -149,7 +149,7 @@ export default function DriveTab({ v }: { v: View }) {
   return (
     <Card
       title="Drive-through view"
-      subtitle="A first-person view along the route. You stand on one 50 m block at a time; the road ahead is coloured by the selected driver, or by the average of all drivers. Drag the slider to jump anywhere along the chainage."
+      subtitle="Drag the slider to move along the chainage."
     >
       <div ref={wrap} className="relative overflow-hidden rounded-lg border border-line bg-sky-100">
         <canvas ref={canvas} className="block h-[28rem] w-full" aria-label="First-person view of the road coloured by IRI" />

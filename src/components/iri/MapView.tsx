@@ -7,17 +7,13 @@ import type { View } from "./view";
 import { colorCss } from "@/lib/iri/scale";
 import { fmtCh } from "@/lib/iri/format";
 
-export type Basemap = "light" | "streets" | "osm" | "none";
-
-const TILES: Record<Exclude<Basemap, "none">, { url: string; attr: string; sub?: string }> = {
-  light: { url: "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", attr: "© OpenStreetMap contributors © CARTO", sub: "abcd" },
-  streets: { url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", attr: "Tiles © Esri" },
-  osm: { url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attr: "© OpenStreetMap contributors" },
-};
-const BASE_OPACITY = 0.45;
+// The base map is fixed to OpenStreetMap, drawn faint so the IRI colours stand out.
+const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const OSM_ATTR = "© OpenStreetMap contributors";
+const BASE_OPACITY = 0.6;
 
 /** Leaflet map: the shown route coloured block by block, other routes in grey, a marker on the current block. */
-export default function MapView({ v, basemap }: { v: View; basemap: Basemap }) {
+export default function MapView({ v }: { v: View }) {
   const el = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const tile = useRef<L.TileLayer | null>(null);
@@ -83,20 +79,17 @@ export default function MapView({ v, basemap }: { v: View; basemap: Basemap }) {
     };
   }, []);
 
-  // base map
+  // base map: OpenStreetMap only
   useEffect(() => {
     const m = map.current;
     if (!m) return;
-    if (tile.current) {
-      m.removeLayer(tile.current);
+    tile.current = L.tileLayer(OSM_URL, { attribution: OSM_ATTR, opacity: BASE_OPACITY, maxZoom: 19 }).addTo(m);
+    tile.current.setZIndex(1);
+    return () => {
+      tile.current?.remove();
       tile.current = null;
-    }
-    if (basemap !== "none") {
-      const t = TILES[basemap];
-      tile.current = L.tileLayer(t.url, { attribution: t.attr, subdomains: t.sub ?? "abc", opacity: BASE_OPACITY, maxZoom: 19 }).addTo(m);
-      tile.current.setZIndex(1);
-    }
-  }, [basemap]);
+    };
+  }, []);
 
   // route geometry
   const route = v.route;

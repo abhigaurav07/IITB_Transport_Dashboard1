@@ -11,9 +11,6 @@ export default function Module1Page() {
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-primary">Module 1</p>
         <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">Road Roughness (IRI)</h1>
-        <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-          This module is organised in submodules. Select one to continue.
-        </p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

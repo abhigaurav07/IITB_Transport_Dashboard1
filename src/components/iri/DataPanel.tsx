@@ -124,7 +124,7 @@ export default function DataPanel(p: Props) {
           {p.tab === "files" ? <FilesTab {...p} /> : null}
           {p.tab === "sum" && p.view ? <SummaryPanel v={p.view} /> : null}
           {p.tab === "basis" && p.view ? <BasisPanel {...p} v={p.view} /> : null}
-          {(p.tab === "sum" || p.tab === "basis") && !p.view ? <p className="text-sm text-ink-muted">Load at least one file and include it in the average to see this.</p> : null}
+          {(p.tab === "sum" || p.tab === "basis") && !p.view ? <p className="text-sm text-ink-muted">Include at least one file to see this.</p> : null}
         </div>
       </aside>
     </>
@@ -165,9 +165,7 @@ function FilesTab(p: Props) {
           }}
         />
         <p className="text-sm font-semibold text-ink">Upload CSV files or drop them here</p>
-        <p className="mx-auto mt-1 max-w-xl text-xs text-ink-muted">
-          One file per driver trip. Required columns: ref_idx, driver_key, lat, lon, predicted_iri. Optional: utc_timestamp, avg_speed_mps. Files are read in your browser and are not sent anywhere.
-        </p>
+        <p className="mx-auto mt-1 max-w-xl text-xs text-ink-muted">One CSV per driver. Files stay in your browser.</p>
         <div className="mt-4">
           <Button variant="primary" onClick={() => input.current?.click()}>Choose files</Button>
         </div>
@@ -181,9 +179,6 @@ function FilesTab(p: Props) {
 
       <section>
         <h3 className="text-sm font-semibold text-ink">Files loaded</h3>
-        <p className="mt-0.5 text-xs text-ink-muted">
-          Excluding a file keeps it listed but removes it from the average. Removing a file deletes it. Averages, class shares, profile, map and drive-through update at once.
-        </p>
         <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
           <table className="w-full min-w-[640px]">
             <thead>
@@ -235,7 +230,6 @@ function FilesTab(p: Props) {
       {p.routes.length ? (
         <section>
           <h3 className="text-sm font-semibold text-ink">Routes detected</h3>
-          <p className="mt-0.5 text-xs text-ink-muted">Files whose reference points coincide are placed on the same route. You can rename a route.</p>
           <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
             <table className="w-full min-w-[560px]">
               <thead>
@@ -296,7 +290,6 @@ function SummaryPanel({ v }: { v: View }) {
     <div className="space-y-6">
       <section>
         <h3 className="text-sm font-semibold text-ink">{route.name}: {route.active.length} driver file{route.active.length === 1 ? "" : "s"} included in the average</h3>
-        <p className="mt-0.5 text-xs text-ink-muted">Mean, median and maximum are plain arithmetic values over the blocks each driver covered.</p>
         <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface">
           <table className="w-full min-w-[760px]">
             <thead>
@@ -335,7 +328,6 @@ function SummaryPanel({ v }: { v: View }) {
       </section>
       <section>
         <h3 className="text-sm font-semibold text-ink">Coverage by block</h3>
-        <p className="mt-0.5 text-xs text-ink-muted">One row per driver, one cell per block along the chainage. Grey cells were not driven. Hover to move the selected block.</p>
         <div className="mt-3">
           <CoverageChart v={v} />
         </div>
@@ -374,9 +366,7 @@ function BasisPanel(p: Props & { v: View }) {
             ))}
           </select>
         </label>
-        <p className="mt-2 text-xs text-ink-muted">
-          Condition classes follow IRC:SP:16-2019: Good below {v.rating.good.toFixed(2)}, Fair {v.rating.good.toFixed(2)} to {v.rating.fair.toFixed(2)}, Poor above {v.rating.fair.toFixed(2)}. The default is Table 3.1, bituminous Expressway, NH and SH roads. Changing the class updates every colour, class share and table. The limits were read from the standard through a text extraction, so please verify them against your copy.
-        </p>
+        <p className="mt-2 text-xs text-ink-muted">Good below {v.rating.good.toFixed(2)}, Fair {v.rating.good.toFixed(2)} to {v.rating.fair.toFixed(2)}, Poor above {v.rating.fair.toFixed(2)}. Verify the limits against your copy of IRC:SP:16-2019.</p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <FieldLabel>Colour scale, IRI value</FieldLabel>
           <input value={lo} onChange={(e) => setLo(e.target.value)} onBlur={commit} size={4} aria-label="Lowest IRI of the colour scale" className="w-20 rounded-lg border border-line px-2.5 py-1.5 text-sm tabular-nums" />

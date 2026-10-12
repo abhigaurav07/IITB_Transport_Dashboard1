@@ -4,7 +4,10 @@ import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 
 import type { Condition } from "@/lib/iri/types";
 import { CLASS_COLOR } from "@/lib/iri/scale";
 
-/* ---------- Tabs (underline style, as in IBM Carbon / Material) ---------- */
+/* ---------- Tabs: rounded squares with a clear coloured boundary ---------- */
+const TAB_BASE = "inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border-[1.5px] px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
+const TAB_ON = "border-primary bg-primary text-white shadow-sm";
+const TAB_OFF = "border-primary/45 bg-surface text-ink hover:border-primary hover:bg-primary-50 hover:text-primary";
 export interface TabDef<T extends string> {
   id: T;
   label: string;
@@ -34,7 +37,7 @@ export function Tabs<T extends string>({
     document.getElementById(`${idPrefix}-tab-${tabs[j].id}`)?.focus();
   };
   return (
-    <div role="tablist" onKeyDown={onKey} className="-mb-px flex gap-1 overflow-x-auto border-b border-line">
+    <div role="tablist" onKeyDown={onKey} className="flex flex-wrap gap-2">
       {tabs.map((t, k) => {
         const on = t.id === value;
         return (
@@ -47,12 +50,9 @@ export function Tabs<T extends string>({
             aria-controls={`${idPrefix}-panel-${t.id}`}
             tabIndex={on ? 0 : -1}
             onClick={() => onChange(t.id)}
-            className={[
-              "relative shrink-0 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors",
-              on ? "border-primary text-primary" : "border-transparent text-ink-muted hover:border-slate-300 hover:text-ink",
-            ].join(" ")}
+            className={`${TAB_BASE} ${on ? TAB_ON : TAB_OFF}`}
           >
-            <span className="mr-2 text-[11px] tabular-nums text-ink-muted/80">{k + 1}</span>
+            <span className={`text-[11px] tabular-nums ${on ? "text-white/80" : "text-primary/70"}`}>{k + 1}</span>
             {t.label}
           </button>
         );
@@ -74,7 +74,7 @@ export function Segmented<T extends string>({
   label: string;
 }) {
   return (
-    <div role="group" aria-label={label} className="inline-flex flex-wrap gap-0.5 rounded-lg border border-line bg-canvas p-0.5">
+    <div role="group" aria-label={label} className="inline-flex flex-wrap gap-2">
       {options.map((o) => {
         const on = o.id === value;
         return (
@@ -83,12 +83,9 @@ export function Segmented<T extends string>({
             type="button"
             aria-pressed={on}
             onClick={() => onChange(o.id)}
-            className={[
-              "inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-[13px] font-medium transition-colors",
-              on ? "bg-surface text-ink shadow-sm ring-1 ring-line" : "text-ink-muted hover:text-ink",
-            ].join(" ")}
+            className={`${TAB_BASE} !py-1.5 text-[13px] ${on ? TAB_ON : TAB_OFF}`}
           >
-            {o.swatch ? <span className="h-2.5 w-2.5 rounded-sm" style={{ background: o.swatch }} aria-hidden /> : null}
+            {o.swatch ? <span className={`h-2.5 w-2.5 rounded-sm ${on ? "ring-2 ring-white" : ""}`} style={{ background: o.swatch }} aria-hidden /> : null}
             {o.label}
           </button>
         );
@@ -156,7 +153,7 @@ export function Button({
 }) {
   const v = {
     primary: "bg-primary text-white hover:bg-primary-dark border-primary",
-    outline: "bg-surface text-ink hover:bg-canvas border-line",
+    outline: "bg-surface text-primary hover:bg-primary-50 border-primary/50 border-[1.5px]",
     ghost: "bg-transparent text-ink-muted hover:bg-canvas border-transparent",
     danger: "bg-surface text-danger hover:bg-danger-50 border-line",
   }[variant];

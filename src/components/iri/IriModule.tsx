@@ -32,7 +32,7 @@ export default function IriModule() {
   const [names, setNames] = useState<Record<string, string>>({});
   const [anchor, setAnchor] = useState<string | null>(null);
   const [selection, setSelection] = useState<Selection>("avg");
-  const [mode, setMode] = useState<ColorMode>("value");
+  const mode: ColorMode = "value";
   const [ratingId, setRatingId] = useState(DEFAULT_RATING_ID);
   const [scale, setScale] = useState({ lo: 3.0, hi: 4.6 });
   const [cur, setCurState] = useState(0);
@@ -243,18 +243,12 @@ export default function IriModule() {
   };
 
   /* ---------- render ---------- */
-  const names2 = route ? route.active.map((m) => m.label.replace(/^Driver /, "")).join(", ") : "";
-  const excluded = route ? route.members.length - route.active.length : 0;
-
   return (
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-primary">Module 1 · Submodule 1</p>
-          <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">KASRA Route IRI</h1>
-          <p className="mt-2 max-w-3xl text-sm text-ink-muted">
-            Predicted International Roughness Index (IRI) for every block of about 50 m along a route. Each block shows the average of all drivers who covered it. Add driver files under Data input and every result updates automatically.
-          </p>
+          <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">KASARA IRI</h1>
         </div>
         <div className="flex shrink-0 gap-2">
           <Button variant="primary" onClick={() => openPanel("files")} ariaHaspopup="dialog">
@@ -270,9 +264,7 @@ export default function IriModule() {
       ) : !route ? (
         <div className="flex flex-col items-center rounded-xl border border-dashed border-line bg-surface px-6 py-16 text-center">
           <h2 className="text-base font-semibold text-ink">No data loaded</h2>
-          <p className="mt-1.5 max-w-lg text-sm text-ink-muted">
-            Upload one CSV file per driver trip. Files that follow the same reference points are grouped into one route automatically, and the average IRI of every 50 m block is calculated from all files of that route.
-          </p>
+          <p className="mt-1.5 max-w-lg text-sm text-ink-muted">Upload one CSV file per driver trip.</p>
           <div className="mt-5 flex gap-2">
             <Button variant="primary" onClick={() => openPanel("files")}>Upload CSV files</Button>
             {!demoLoaded || files.length === 0 ? <Button onClick={() => loadDemo()}>Load demo data</Button> : null}
@@ -280,33 +272,6 @@ export default function IriModule() {
         </div>
       ) : (
         <>
-          <div className="rounded-xl border border-primary/20 bg-primary-50 px-4 py-3" aria-live="polite">
-            <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-primary">Showing</span>
-              <span className="text-base font-semibold text-ink">{route.name}</span>
-              <span className="text-sm tabular-nums text-ink-muted">
-                {route.km[route.n - 1].toFixed(1)} km · chainage 0+000 to {fmtCh(route.km[route.n - 1])} · {(route.n - 1).toLocaleString()} blocks of about 50 m
-              </span>
-            </div>
-            {route.active.length ? (
-              <p className="mt-1 text-sm text-ink-muted">
-                Every block value is the <b className="text-ink">average predicted IRI of {route.active.length} driver{route.active.length === 1 ? "" : "s"}</b> ({names2}) who covered that block.
-                {excluded ? ` ${excluded} file${excluded === 1 ? "" : "s"} excluded.` : ""}{" "}
-                <button type="button" onClick={() => openPanel("files")} className="font-medium text-primary hover:underline">Add or remove files</button>
-              </p>
-            ) : (
-              <p className="mt-1 text-sm text-ink-muted">
-                No file of this route is included in the average. Tick at least one file in{" "}
-                <button type="button" onClick={() => openPanel("files")} className="font-medium text-primary hover:underline">Data input</button> to see results.
-              </p>
-            )}
-            {route.refs[0] > 0 ? (
-              <p className="mt-1 text-xs text-ink-muted">
-                Chainage counts from reference point {route.refs[0]}, the first point in the files loaded for this route. Removing a file that holds earlier points moves the origin.
-              </p>
-            ) : null}
-          </div>
-
           {view ? (
             <>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-line bg-surface px-4 py-3">
@@ -329,18 +294,6 @@ export default function IriModule() {
                     options={[{ id: "avg", label: "All drivers (average)", swatch: "#0f172a" }, ...route.active.map((m) => ({ id: m.ds.id, label: m.label, swatch: m.color }))]}
                   />
                 </div>
-                <div className="flex items-center gap-2.5">
-                  <FieldLabel>Colour by</FieldLabel>
-                  <Segmented<ColorMode>
-                    label="Colour by"
-                    value={mode}
-                    onChange={setMode}
-                    options={[
-                      { id: "value", label: "IRI value" },
-                      { id: "class", label: "Condition class" },
-                    ]}
-                  />
-                </div>
               </div>
 
               <div>
@@ -353,7 +306,12 @@ export default function IriModule() {
                 </div>
               </div>
             </>
-          ) : null}
+          ) : (
+            <div className="flex flex-col items-center rounded-xl border border-dashed border-line bg-surface px-6 py-14 text-center">
+              <p className="text-sm text-ink-muted">No file is included in the average.</p>
+              <div className="mt-4"><Button variant="primary" onClick={() => openPanel("files")}>Open Data input</Button></div>
+            </div>
+          )}
         </>
       )}
 
