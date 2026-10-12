@@ -28,8 +28,8 @@ export const MODULE_1_SUBMODULES: SubmoduleNavItem[] = [
     href: "/module-1/atal-setu-iri",
     number: "2",
     label: "ATAL SETU IRI",
-    description: "Predicted IRI against validated NSV IRI.",
-    status: "construction",
+    description: "Validated NSV IRI, compared with the model.",
+    status: "live",
   },
 ];
 
