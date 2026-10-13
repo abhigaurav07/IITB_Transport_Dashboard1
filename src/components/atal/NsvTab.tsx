@@ -2,27 +2,30 @@
 
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
-import NsvProfile from "./NsvProfile";
+import ProfileChart from "./ProfileChart";
+import MapLegend from "./MapLegend";
 import { Card, ConditionBadge, td, tdNum, th, thNum } from "@/components/iri/ui";
 import StatCard from "@/components/ui/StatCard";
-import { MAP_HI, MAP_LO, NSV_URL, summariseNsv, type NsvBlock } from "@/lib/atal/nsv";
-import { ratingById, conditionOf, DEFAULT_RATING_ID, ratingName } from "@/lib/iri/rating";
+import { LWP_COLOR, MAP_HI, MAP_LO, NSV_COLOR, RWP_COLOR, summariseNsv, type NsvBlock } from "@/lib/atal/nsv";
+import { downloadCsv, rangeLabel } from "@/lib/atal/format";
+import { conditionOf, DEFAULT_RATING_ID, ratingById, ratingName } from "@/lib/iri/rating";
 import { fmtCh } from "@/lib/iri/format";
-import { CLASS_COLOR, NO_DATA, RAMP_CSS } from "@/lib/iri/scale";
+import { CLASS_COLOR, rampRgb, rgbCss } from "@/lib/iri/scale";
 import type { Condition } from "@/lib/iri/types";
 
-const NsvMap = dynamic(() => import("./NsvMap"), {
+const RouteMap = dynamic(() => import("./RouteMap"), {
   ssr: false,
   loading: () => <div className="grid h-full place-items-center text-sm text-ink-muted">Loading map</div>,
 });
 
-const rangeLabel = (b: NsvBlock) => `${fmtCh(b.startM / 1000)} to ${fmtCh(b.endM / 1000)}`;
+const POOR = "#b91c1c";
+const GOOD = "#15803d";
 
 function BlockPanel({ b, i, n, mean }: { b: NsvBlock; i: number; n: number; mean: number }) {
   const rating = ratingById(DEFAULT_RATING_ID);
   const rows: [string, string][] = [
     ["Block", `${i + 1} of ${n}`],
-    ["Chainage", rangeLabel(b)],
+    ["Chainage", rangeLabel(b.startM, b.endM)],
     ["Length", `${b.endM - b.startM} m`],
     ["Bump integrator", b.bi.toLocaleString()],
     ["Survey speed", `${b.speed.toFixed(1)} km/h`],
@@ -76,8 +79,41 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
   const sum = useMemo(() => summariseNsv(blocks, rating), [blocks, rating]);
   const top = useMemo(() => blocks.map((_, i) => i).sort((a, b) => blocks[b].avg - blocks[a].avg).slice(0, 10), [blocks]);
   const [cur, setCur] = useState(0);
+  const [show, setShow] = useState({ lwp: false, rwp: false });
   const share = (c: Condition) => (100 * sum.lengthKm[c]) / sum.km;
-  const b = blocks[cur];
+  const c = Math.min(cur, blocks.length - 1);
+  const b = blocks[c];
+
+  const starts = useMemo(() => blocks.map((x) => x.startM), [blocks]);
+  const ends = useMemo(() => blocks.map((x) => x.endM), [blocks]);
+  const segs = useMemo(() => blocks.map((x) => ({ a: [x.lat, x.lon] as [number, number], b: [x.endLat, x.endLon] as [number, number] })), [blocks]);
+  const colors = useMemo(() => blocks.map((x) => rgbCss(rampRgb(x.avg, MAP_LO, MAP_HI))), [blocks]);
+  const panels = useMemo(
+    () => [
+      {
+        height: 280,
+        kind: "abs" as const,
+        thresholds: [[rating.good, GOOD], [rating.fair, POOR]] as [number, string][],
+        series: [
+          ...(show.lwp ? [{ key: "lwp", color: LWP_COLOR, values: blocks.map((x) => x.lwp), width: 1.3 }] : []),
+          ...(show.rwp ? [{ key: "rwp", color: RWP_COLOR, values: blocks.map((x) => x.rwp), width: 1.3 }] : []),
+          { key: "avg", color: NSV_COLOR, values: blocks.map((x) => x.avg) },
+        ],
+      },
+    ],
+    [blocks, rating, show],
+  );
+  const chip = (k: "lwp" | "rwp", label: string, color: string) => (
+    <button
+      type="button"
+      aria-pressed={show[k]}
+      onClick={() => setShow((s) => ({ ...s, [k]: !s[k] }))}
+      className={`inline-flex items-center gap-2 rounded-lg border-[1.5px] px-2.5 py-1 text-xs font-medium transition-colors ${show[k] ? "border-primary bg-primary-50 text-primary" : "border-primary/45 bg-surface text-ink hover:border-primary"}`}
+    >
+      <span className="h-[3px] w-4 rounded" style={{ background: color }} />
+      {label}
+    </button>
+  );
 
   return (
     <div className="space-y-5">
@@ -85,44 +121,50 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
         <StatCard label="Surveyed length" value={`${sum.km.toFixed(1)} km`} sublabel={`Chainage ${fmtCh(sum.startKm)} to ${fmtCh(sum.endKm)} · ${sum.blocks} blocks of 50 m`} />
         <StatCard label="Mean IRI" value={sum.mean.toFixed(2)} tone="primary" sublabel={`Median ${sum.median.toFixed(2)} · lowest ${sum.lowest.toFixed(2)} · highest ${sum.highest.toFixed(2)}`} />
         <StatCard label="Good condition" value={`${share("Good").toFixed(0)}%`} tone="success" sublabel={`${sum.lengthKm.Good.toFixed(1)} km below ${rating.good.toFixed(2)} (${nm.table})`} />
-        <StatCard label="Highest block" value={blocks[sum.worst].avg.toFixed(2)} sublabel={`At ${rangeLabel(blocks[sum.worst])}`} />
+        <StatCard label="Highest block" value={blocks[sum.worst].avg.toFixed(2)} sublabel={`At ${rangeLabel(blocks[sum.worst].startM, blocks[sum.worst].endM)}`} />
       </div>
 
-      <NsvProfile blocks={blocks} cur={cur} setCur={setCur} rating={rating} />
+      <ProfileChart
+        title="NSV IRI along the chainage"
+        starts={starts}
+        ends={ends}
+        panels={panels}
+        cur={c}
+        setCur={setCur}
+        ariaLabel="NSV IRI of each 50 m block along the chainage"
+        legend={
+          <>
+            <span className="inline-flex items-center gap-2"><span className="h-[3px] w-5 rounded bg-ink" />Average IRI</span>
+            {chip("lwp", "Left wheel path", LWP_COLOR)}
+            {chip("rwp", "Right wheel path", RWP_COLOR)}
+            <span className="inline-flex items-center gap-2"><span className="w-5 border-t-2 border-dashed" style={{ borderColor: POOR }} />Poor above {rating.fair.toFixed(2)}</span>
+            <span className="inline-flex items-center gap-2"><span className="w-5 border-t-2 border-dashed" style={{ borderColor: GOOD }} />Good below {rating.good.toFixed(2)}</span>
+          </>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <Card title="Map of NSV IRI">
           <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-slate-100">
-            <NsvMap blocks={blocks} cur={cur} setCur={setCur} />
+            <RouteMap segs={segs} colors={colors} cur={c} setCur={setCur} startLabel={`Start, chainage ${fmtCh(sum.startKm)}`} endLabel={`End, chainage ${fmtCh(sum.endKm)}`} ariaLabel="Route map coloured by NSV IRI" />
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-ink-muted">
-            <span className="inline-flex items-center gap-2">
-              <span>≤{MAP_LO.toFixed(1)}</span>
-              <span className="h-2.5 w-44 rounded-full" style={{ background: RAMP_CSS }} aria-hidden />
-              <span>≥{MAP_HI.toFixed(1)}</span>
-              <span>average IRI (m/km)</span>
-            </span>
-            <span className="inline-flex items-center gap-2">
-              <span className="h-2.5 w-2.5 rounded-sm border border-slate-300" style={{ background: NO_DATA }} aria-hidden />
-              Hover or click the route to read a block
-            </span>
-          </div>
+          <MapLegend note="Hover or click the route to read a block" />
         </Card>
         <Card title="Selected block">
-          <BlockPanel b={b} i={cur} n={blocks.length} mean={sum.mean} />
+          <BlockPanel b={b} i={c} n={blocks.length} mean={sum.mean} />
         </Card>
       </div>
 
       <Card title="Condition by length of road" subtitle={`IRC:SP:16-2019 ${nm.table}. Good below ${rating.good.toFixed(2)}, Poor above ${rating.fair.toFixed(2)}.`}>
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((c) => `${c} ${share(c).toFixed(1)} percent`).join(", ")}>
-          {(["Good", "Fair", "Poor"] as Condition[]).map((c) => (share(c) > 0 ? <span key={c} style={{ width: `${share(c)}%`, background: CLASS_COLOR[c] }} /> : null))}
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((k) => `${k} ${share(k).toFixed(1)} percent`).join(", ")}>
+          {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (share(k) > 0 ? <span key={k} style={{ width: `${share(k)}%`, background: CLASS_COLOR[k] }} /> : null))}
         </div>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          {(["Good", "Fair", "Poor"] as Condition[]).map((c) => (
-            <span key={c} className="inline-flex items-center gap-2">
-              <ConditionBadge c={c} />
-              <b className="tabular-nums">{sum.lengthKm[c].toFixed(1)} km</b>
-              <span className="text-ink-muted tabular-nums">({share(c).toFixed(1)}%)</span>
+          {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (
+            <span key={k} className="inline-flex items-center gap-2">
+              <ConditionBadge c={k} />
+              <b className="tabular-nums">{sum.lengthKm[k].toFixed(1)} km</b>
+              <span className="text-ink-muted tabular-nums">({share(k).toFixed(1)}%)</span>
             </span>
           ))}
         </div>
@@ -145,7 +187,7 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
                 <tr key={i} className="cursor-pointer hover:bg-canvas" onClick={() => setCur(i)}>
                   <td className={td}>
                     <button type="button" className="font-medium tabular-nums text-primary hover:underline" onClick={(e) => { e.stopPropagation(); setCur(i); }}>
-                      {rangeLabel(blocks[i])}
+                      {rangeLabel(blocks[i].startM, blocks[i].endM)}
                     </button>
                   </td>
                   <td className={tdNum}>{blocks[i].avg.toFixed(2)}</td>
@@ -162,9 +204,15 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
       <Card
         title="All 50 m blocks"
         action={
-          <a href={NSV_URL} download="nsv_iri_50m.csv" className="inline-flex items-center rounded-lg border-[1.5px] border-primary/50 bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50">
+          <button
+            type="button"
+            onClick={() =>
+              downloadCsv("nsv_iri_50m.csv", ["start_m", "end_m", "lwp_iri", "rwp_iri", "avg_iri", "bi", "speed_kmh", "lat", "lon", "end_lat", "end_lon"], blocks.map((x) => [x.startM, x.endM, x.lwp, x.rwp, x.avg, x.bi, x.speed, x.lat, x.lon, x.endLat, x.endLon]))
+            }
+            className="inline-flex items-center rounded-lg border-[1.5px] border-primary/50 bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50"
+          >
             Download CSV
-          </a>
+          </button>
         }
       >
         <div className="-mx-2 max-h-[28rem] overflow-auto">
@@ -182,8 +230,8 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
             </thead>
             <tbody className="divide-y divide-line">
               {blocks.map((x, i) => (
-                <tr key={x.startM} className={`cursor-pointer hover:bg-canvas ${i === cur ? "bg-primary-50/70" : ""}`} onClick={() => setCur(i)}>
-                  <td className={`${td} tabular-nums`}>{rangeLabel(x)}</td>
+                <tr key={x.startM} className={`cursor-pointer hover:bg-canvas ${i === c ? "bg-primary-50/70" : ""}`} onClick={() => setCur(i)}>
+                  <td className={`${td} tabular-nums`}>{rangeLabel(x.startM, x.endM)}</td>
                   <td className={tdNum}>{x.lwp.toFixed(2)}</td>
                   <td className={tdNum}>{x.rwp.toFixed(2)}</td>
                   <td className={`${tdNum} font-medium`}>{x.avg.toFixed(2)}</td>
