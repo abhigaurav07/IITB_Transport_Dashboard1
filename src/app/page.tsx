@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PROJECT } from "@/data/project";
 import { MODULES } from "@/components/layout/nav-items";
 import { ChevronRightIcon } from "@/components/icons";
 
@@ -8,12 +7,8 @@ export default function OverviewPage() {
     <div className="space-y-8">
       <div>
         <p className="text-xs font-semibold uppercase tracking-wide text-primary">Project Dashboard</p>
-        <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">{PROJECT.name}</h1>
-        <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-          Traffic and transportation data collection, analysis and reporting workspace for the {PROJECT.name}{" "}
-          study, covering {PROJECT.totalChainageKm} km as a {PROJECT.laneConfiguration}. Select a module below
-          to continue.
-        </p>
+        <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">Transport Project</h1>
+        <p className="mt-2 max-w-2xl text-sm text-ink-muted">Select a module below to continue.</p>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

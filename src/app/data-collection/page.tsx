@@ -65,13 +65,13 @@ function PageHeader({ summary }: { summary: ProjectSummary }) {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">Data Collection Module</p>
-        <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">
-          Daily Traffic Data Collection Tracker
-        </h1>
-        <p className="mt-1 text-sm text-ink-muted">
-          {PROJECT.shortName} &middot; {PROJECT.laneConfiguration} &middot; Chainage 0 to {PROJECT.totalChainageKm}{" "}
-          km [{PROJECT.chainageTag}]
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+          Data Collection Module <span className="ml-2 font-medium text-ink-muted">{PROJECT.chainageTag}</span>
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">{PROJECT.name}</h1>
+        <p className="mt-2 max-w-2xl text-sm text-ink-muted">
+          Traffic and transportation data collection, analysis and reporting workspace for the {PROJECT.name}{" "}
+          study, covering {PROJECT.totalChainageKm} km as a {PROJECT.laneConfiguration}.
         </p>
       </div>
       <div className="text-left lg:text-right">
