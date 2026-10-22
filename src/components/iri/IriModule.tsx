@@ -247,7 +247,7 @@ export default function IriModule() {
     <div className="space-y-5">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Module 1 · Submodule 1</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary">Module 1</p>
           <h1 className="mt-1 text-2xl font-semibold text-ink lg:text-3xl">KASARA IRI</h1>
         </div>
         <div className="flex shrink-0 gap-2">

@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import SidebarNav from "./SidebarNav";
 import { MenuIcon, CloseIcon } from "@/components/icons";
-import { PROJECT } from "@/data/project";
+import { usePathname } from "next/navigation";
+import { projectDef, slugFromPath } from "@/lib/projects/modules";
 
 // Today's date only ever needs to be right in the browser, and it may
 // legitimately differ from the server's render if the page was cached,
@@ -21,6 +22,7 @@ function todayLabel(): string {
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const projectName = projectDef(slugFromPath(usePathname()))?.name ?? "Transport Project";
 
   // Close the mobile drawer automatically if the viewport grows past the
   // breakpoint where the persistent sidebar takes over.
@@ -74,7 +76,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           </button>
           <div className="min-w-0 flex-1">
             <p className="truncate text-xs text-ink-muted">
-              {PROJECT.shortName} &middot; Traffic and Transportation Study
+              {projectName}
             </p>
           </div>
           <div className="hidden text-right sm:block">
@@ -90,8 +92,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </main>
 
         <footer className="border-t border-line px-4 py-4 text-center text-[11px] text-ink-muted lg:px-8">
-          {PROJECT.shortName} Project Dashboard, an internal engineering tool. The Data Collection and Road Roughness (IRI)
-          modules are live; the remaining modules are under construction.
+          {projectName} &middot; Transport Project, IIT Bombay.
         </footer>
       </div>
     </div>

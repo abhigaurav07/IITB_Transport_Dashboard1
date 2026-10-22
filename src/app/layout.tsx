@@ -8,22 +8,20 @@ import "@fontsource/inter/400.css";
 import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "./globals.css";
-import AppShell from "@/components/layout/AppShell";
-import { PROJECT } from "@/data/project";
 
 export const metadata: Metadata = {
   title: {
-    default: `${PROJECT.shortName} | Project Dashboard`,
-    template: `%s | ${PROJECT.shortName}`,
+    default: "Transport Project",
+    template: "%s | Transport Project",
   },
-  description: `${PROJECT.fullName}.`,
+  description: "A vault for project records, data and results.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full">
-        <AppShell>{children}</AppShell>
+        {children}
       </body>
     </html>
   );

@@ -76,3 +76,17 @@ body {
 
 /* Leaflet on the dashboard canvas: match the app font and keep controls compact. */
 .leaflet-container { font-family: var(--font-sans); background: #f1f5f9; }
+
+/* Vault (landing, project list, new project) */
+@keyframes tp-draw { to { stroke-dashoffset: 0; } }
+@keyframes tp-rise { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes tp-fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes tp-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.tp-draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: tp-draw 1.8s ease-out .2s forwards; }
+.tp-bar { transform-box: fill-box; transform-origin: bottom; animation: tp-rise .6s ease-out backwards; }
+.tp-fade { animation: tp-fade .6s ease-out backwards; }
+.tp-float { animation: tp-float 7s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .tp-draw { stroke-dashoffset: 0; animation: none; }
+  .tp-bar, .tp-fade, .tp-float { animation: none; }
+}
