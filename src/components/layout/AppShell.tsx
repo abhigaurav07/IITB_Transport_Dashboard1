@@ -1,31 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import SidebarNav from "./SidebarNav";
-import { MenuIcon, CloseIcon } from "@/components/icons";
 import { usePathname } from "next/navigation";
-import { projectDef, slugFromPath } from "@/lib/projects/modules";
-
-// Today's date only ever needs to be right in the browser, and it may
-// legitimately differ from the server's render if the page was cached,
-// so it's read directly at render time and the mismatch is intentionally
-// suppressed on that one text node (React's documented pattern for
-// unavoidable server/client differences like a live clock or date).
-function todayLabel(): string {
-  return new Date().toLocaleDateString("en-IN", {
-    weekday: "short",
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-}
+import SidebarNav from "./SidebarNav";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import { MenuIcon, CloseIcon } from "@/components/icons";
+import { crumbsFor } from "@/lib/projects/modules";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
-  const projectName = projectDef(slugFromPath(usePathname()))?.name ?? "Transport Project";
+  const pathname = usePathname();
 
-  // Close the mobile drawer automatically if the viewport grows past the
-  // breakpoint where the persistent sidebar takes over.
+  // Close the mobile drawer if the viewport grows past the breakpoint where the persistent sidebar takes over.
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 1024px)");
     const handler = () => setOpen(false);
@@ -33,29 +19,27 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     return () => mq.removeEventListener("change", handler);
   }, []);
 
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === "Escape" && setOpen(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
+
   return (
     <div className="flex min-h-screen bg-canvas">
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:w-64 lg:shrink-0 lg:flex-col bg-ink">
-        <SidebarNav />
+      <aside className="hidden border-r border-line bg-surface lg:flex lg:w-64 lg:shrink-0 lg:flex-col">
+        <div className="sticky top-0 flex h-screen flex-col">
+          <SidebarNav />
+        </div>
       </aside>
 
-      {/* Mobile sidebar (slide-over) */}
       {open ? (
-        <div className="fixed inset-0 z-40 lg:hidden">
-          <button
-            aria-label="Close navigation"
-            className="absolute inset-0 bg-slate-950/60"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute inset-y-0 left-0 w-72 max-w-[85vw] bg-ink shadow-2xl">
+        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
+          <button aria-label="Close navigation" className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
+          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-surface shadow-lift">
             <div className="flex justify-end px-3 pt-3">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Close navigation"
-                className="rounded-md p-1.5 text-slate-400 hover:bg-white/5 hover:text-white"
-              >
+              <button type="button" onClick={() => setOpen(false)} aria-label="Close navigation" className="rounded-lg p-2 text-ink-muted hover:bg-navy-50 hover:text-ink">
                 <CloseIcon className="h-5 w-5" />
               </button>
             </div>
@@ -65,25 +49,12 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-line bg-surface/95 px-4 py-3 backdrop-blur lg:px-8">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            aria-label="Open navigation"
-            className="inline-flex items-center justify-center rounded-md p-2 text-ink-muted hover:bg-canvas lg:hidden"
-          >
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur lg:px-8">
+          <button type="button" onClick={() => setOpen(true)} aria-label="Open navigation" className="-ml-1 inline-flex items-center justify-center rounded-lg p-2 text-ink-muted hover:bg-navy-50 hover:text-ink lg:hidden">
             <MenuIcon className="h-5 w-5" />
           </button>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-xs text-ink-muted">
-              {projectName}
-            </p>
-          </div>
-          <div className="hidden text-right sm:block">
-            <p className="text-[11px] text-ink-muted">Today</p>
-            <p className="text-sm font-medium tabular-nums text-ink" suppressHydrationWarning>
-              {todayLabel()}
-            </p>
+            <Breadcrumbs items={crumbsFor(pathname)} />
           </div>
         </header>
 
@@ -91,9 +62,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="mx-auto w-full max-w-7xl">{children}</div>
         </main>
 
-        <footer className="border-t border-line px-4 py-4 text-center text-[11px] text-ink-muted lg:px-8">
-          {projectName} &middot; Transport Project, IIT Bombay.
-        </footer>
+        <footer className="border-t border-line px-4 py-4 text-xs text-ink-muted lg:px-8">Transport Projects &middot; IIT Bombay</footer>
       </div>
     </div>
   );

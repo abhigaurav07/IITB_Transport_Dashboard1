@@ -11,8 +11,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: {
-    default: "Transport Project",
-    template: "%s | Transport Project",
+    default: "Transport Projects",
+    template: "%s | Transport Projects",
   },
   description: "A vault for project records, data and results.",
 };

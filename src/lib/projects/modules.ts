@@ -51,3 +51,26 @@ export function slugFromPath(pathname: string): string | undefined {
   const m = pathname.match(/^\/projects\/([^/]+)/);
   return m?.[1];
 }
+
+export interface PathCrumb {
+  label: string;
+  href?: string;
+}
+
+/** Breadcrumb trail for any /projects/<slug>/... workspace path. */
+export function crumbsFor(pathname: string): PathCrumb[] {
+  const slug = slugFromPath(pathname);
+  const def = projectDef(slug);
+  const trail: PathCrumb[] = [{ label: "Home", href: "/" }, { label: "Existing Projects", href: "/projects" }];
+  if (!def) return trail;
+  const home = `/projects/${def.slug}`;
+  const rest = pathname.slice(home.length).replace(/^\/+|\/+$/g, "");
+  const mod = def.modules.find((m) => m.path === rest.split("/")[0]);
+  if (mod) {
+    trail.push({ label: def.name, href: home });
+    trail.push({ label: mod.number ? `Module ${mod.number}: ${mod.label}` : mod.label });
+  } else {
+    trail.push({ label: def.name });
+  }
+  return trail;
+}

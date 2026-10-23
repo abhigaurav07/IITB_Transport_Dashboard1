@@ -19,3 +19,11 @@ export function fmtSize(n: number): string {
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(0)} KB`;
   return `${(n / 1024 / 1024).toFixed(1)} MB`;
 }
+
+/** "12 Aug 2026" for a single data date, "12 Aug 2026 to 20 Aug 2026" for a range, "" if none. */
+export function periodLabel(from: string, to: string): string {
+  const a = fmtDate(from);
+  const b = fmtDate(to);
+  if (a && b) return from === to ? a : `${a} to ${b}`;
+  return a || b;
+}
