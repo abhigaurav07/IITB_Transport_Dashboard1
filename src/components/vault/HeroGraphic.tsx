@@ -2,9 +2,9 @@
 // nodes and chainage ticks. It carries no values and does not depict real data.
 const W = 560;
 const H = 380;
-const NAVY = "#17365d";
-const BLUE = "#2563eb";
-const MUTED = "#8a97a8";
+const NAVY = "var(--art-line)";
+const BLUE = "var(--art-accent)";
+const MUTED = "var(--art-muted)";
 
 type P = { x: number; y: number; nx: number; ny: number };
 
@@ -37,16 +37,18 @@ const by = main[J].y;
 const branch = sample((t) => [bx + t * 160, by - 140 * Math.sin((t * Math.PI) / 2.2)], 60);
 const K = Math.round(N * 0.78);
 
+const pop = (t: number) => ({ "--d": `${(0.35 + t * 1.0).toFixed(2)}s` }) as React.CSSProperties;
+
 export default function HeroGraphic({ className }: { className?: string }) {
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className={className} role="img" aria-label="Abstract illustration of a road alignment with a branch road, connected nodes and chainage markers">
       {/* branch road */}
-      <path d={d(branch)} fill="none" stroke="#c6d0dd" strokeWidth="1.2" />
-      <path d={d(branch)} fill="none" stroke="#9fb0c6" strokeWidth="1.2" strokeDasharray="4 5" />
+      <path d={d(branch)} fill="none" stroke="var(--art-soft)" strokeWidth="1.2" />
+      <path d={d(branch)} fill="none" stroke="var(--art-muted)" strokeWidth="1.2" strokeDasharray="4 5" />
 
       {/* main road: casing, surface, centre line */}
-      <path d={d(main)} fill="none" stroke="#c6d0dd" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" />
-      <path d={d(main)} fill="none" stroke="#fff" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={d(main)} fill="none" stroke="var(--art-soft)" strokeWidth="18" strokeLinecap="round" strokeLinejoin="round" />
+      <path d={d(main)} fill="none" stroke="var(--art-fill)" strokeWidth="16" strokeLinecap="round" strokeLinejoin="round" />
       <path d={d(main)} pathLength={1} fill="none" stroke={BLUE} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" className="tp-draw" />
 
       {/* chainage markers */}
@@ -57,6 +59,8 @@ export default function HeroGraphic({ className }: { className?: string }) {
         return (
           <line
             key={i}
+            className="tp-tick"
+            style={{ "--d": `${(0.35 + (i / N) * 1.0).toFixed(2)}s` } as React.CSSProperties}
             x1={p.x + p.nx * r}
             y1={p.y + p.ny * r}
             x2={p.x - p.nx * r}
@@ -69,11 +73,12 @@ export default function HeroGraphic({ className }: { className?: string }) {
       })}
 
       {/* nodes */}
-      <circle cx={main[0].x} cy={main[0].y} r="6.5" fill="#fff" stroke={NAVY} strokeWidth="2.2" />
-      <circle cx={main[N].x} cy={main[N].y} r="6.5" fill={NAVY} />
-      <circle cx={main[K].x} cy={main[K].y} r="4.5" fill="#fff" stroke={NAVY} strokeWidth="1.8" />
-      <circle cx={bx} cy={by} r="4.5" fill="#fff" stroke={BLUE} strokeWidth="1.8" />
-      <circle cx={branch[60].x} cy={branch[60].y} r="4.5" fill="#fff" stroke={MUTED} strokeWidth="1.6" />
+      {/* each node pops in as the route line reaches it */}
+      <circle className="tp-pop" style={pop(0)} cx={main[0].x} cy={main[0].y} r="6.5" fill="var(--art-fill)" stroke={NAVY} strokeWidth="2.2" />
+      <circle className="tp-pop" style={pop(J / N)} cx={bx} cy={by} r="4.5" fill="var(--art-fill)" stroke={BLUE} strokeWidth="1.8" />
+      <circle className="tp-pop" style={pop(K / N)} cx={main[K].x} cy={main[K].y} r="4.5" fill="var(--art-fill)" stroke={NAVY} strokeWidth="1.8" />
+      <circle className="tp-pop" style={pop(1)} cx={main[N].x} cy={main[N].y} r="6.5" fill={NAVY} />
+      <circle className="tp-pop" style={pop(1.1)} cx={branch[60].x} cy={branch[60].y} r="4.5" fill="var(--art-fill)" stroke={MUTED} strokeWidth="1.6" />
     </svg>
   );
 }

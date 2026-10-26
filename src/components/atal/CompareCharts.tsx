@@ -4,8 +4,8 @@ import type { PointerEvent } from "react";
 import { Card, useWidth } from "@/components/iri/ui";
 import { MODEL_COLOR, NSV_COLOR } from "@/lib/atal/nsv";
 
-const AXIS = "#334155";
-const GRID = "#e2e8f0";
+const AXIS = "var(--chart-axis)";
+const GRID = "var(--chart-grid)";
 
 function niceMax(v: number): number {
   return Math.max(5, Math.ceil(v));
@@ -48,7 +48,7 @@ export function ScatterCard({ points, cur, setCur }: { points: ScatterPoint[]; c
     <Card title="Model against NSV" subtitle="One dot per 50 m block. Dots on the dashed line would mean the model matches NSV.">
       <div ref={ref} className="w-full">
         <svg width={W} height={H} role="img" aria-label="Scatter of model IRI against NSV IRI" className="block max-w-full select-none">
-          <rect x={M.l} y={M.t} width={W - M.l - M.r} height={H - M.t - M.b} fill="#fff" stroke={GRID} />
+          <rect x={M.l} y={M.t} width={W - M.l - M.r} height={H - M.t - M.b} fill="var(--chart-plot)" stroke={GRID} />
           {ticks.map((t) => (
             <g key={t}>
               <line x1={M.l} x2={W - M.r} y1={y(t)} y2={y(t)} stroke={GRID} />
@@ -102,7 +102,7 @@ export function HistogramCard({ nsv, model }: { nsv: number[]; model: number[] }
       </div>
       <div ref={ref} className="w-full">
         <svg width={W} height={H} role="img" aria-label="Distribution of NSV and model IRI values" className="block max-w-full select-none">
-          <rect x={M.l} y={M.t} width={W - M.l - M.r} height={H - M.t - M.b} fill="#fff" stroke={GRID} />
+          <rect x={M.l} y={M.t} width={W - M.l - M.r} height={H - M.t - M.b} fill="var(--chart-plot)" stroke={GRID} />
           {yt.map((t) => (
             <g key={t}>
               <line x1={M.l} x2={W - M.r} y1={y(t)} y2={y(t)} stroke={GRID} />

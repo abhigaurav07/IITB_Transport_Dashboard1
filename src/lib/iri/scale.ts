@@ -19,7 +19,8 @@ export const CLASS_TEXT: Record<Condition, string> = {
   Fair: "#b45309",
   Poor: "#b91c1c",
 };
-export const DRIVER_COLORS = ["#6929c4", "#1192e8", "#005d5d", "#9f1853", "#002d9c", "#8a3800", "#003a6d", "#a56eff"];
+// Series colours resolve through CSS variables so they stay legible in both themes (see globals.css).
+export const DRIVER_COLORS = Array.from({ length: 8 }, (_, i) => `var(--drv-${i})`);
 export const NO_DATA = "#e2e8f0";
 
 const RAMP_HEX = ["#fde5cc", "#fbc08a", "#f59a4d", "#e5702a", "#c4501a", "#9a3a12", "#6b2610"];

@@ -1,5 +1,6 @@
 "use client";
 
+import ThemeToggle from "@/components/ThemeToggle";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import SidebarNav from "./SidebarNav";
@@ -34,10 +35,16 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </aside>
 
-      {open ? (
-        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label="Navigation">
-          <button aria-label="Close navigation" className="absolute inset-0 bg-ink/40" onClick={() => setOpen(false)} />
-          <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-surface shadow-lift">
+      <div
+          className={`fixed inset-0 z-40 lg:hidden ${open ? "" : "pointer-events-none invisible delay-200"}`}
+          style={{ transitionProperty: "visibility" }}
+          role="dialog"
+          aria-modal={open}
+          aria-label="Navigation"
+          inert={!open}
+        >
+          <button aria-label="Close navigation" tabIndex={open ? 0 : -1} className={`absolute inset-0 bg-scrim transition-opacity duration-200 ${open ? "opacity-100" : "opacity-0"}`} onClick={() => setOpen(false)} />
+          <div className={`absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-surface shadow-lift transition-transform duration-200 ease-out ${open ? "translate-x-0" : "-translate-x-full"}`}>
             <div className="flex justify-end px-3 pt-3">
               <button type="button" onClick={() => setOpen(false)} aria-label="Close navigation" className="rounded-lg p-2 text-ink-muted hover:bg-navy-50 hover:text-ink">
                 <CloseIcon className="h-5 w-5" />
@@ -45,8 +52,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <SidebarNav onNavigate={() => setOpen(false)} />
           </div>
-        </div>
-      ) : null}
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-line bg-surface/95 px-4 backdrop-blur lg:px-8">
@@ -56,6 +62,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <div className="min-w-0 flex-1">
             <Breadcrumbs items={crumbsFor(pathname)} />
           </div>
+          <ThemeToggle className="h-9 w-9" />
         </header>
 
         <main className="flex-1 px-4 py-6 lg:px-8 lg:py-8">

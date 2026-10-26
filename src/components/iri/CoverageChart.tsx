@@ -6,7 +6,8 @@ import { ColorLegend } from "./Legend";
 import type { View } from "./view";
 import { driverStats } from "@/lib/iri/stats";
 import { fmtCh } from "@/lib/iri/format";
-import { colorCss, NO_DATA } from "@/lib/iri/scale";
+import { colorCss } from "@/lib/iri/scale";
+import { cssVar, useTheme } from "@/lib/theme";
 
 const L = 150;
 const R = 8;
@@ -18,6 +19,7 @@ export function CoverageChart({ v }: { v: View }) {
   const [wrap, width] = useWidth<HTMLDivElement>();
   const cv = useRef<HTMLCanvasElement>(null);
   const rows = route.active.length;
+  const theme = useTheme();
   const H = 6 + rows * ROW + 26;
 
   const draw = useCallback(() => {
@@ -35,7 +37,7 @@ export function CoverageChart({ v }: { v: View }) {
     ctx.textBaseline = "middle";
     route.active.forEach((m, r) => {
       const yy = 6 + r * ROW;
-      ctx.fillStyle = NO_DATA;
+      ctx.fillStyle = cssVar("--chart-grid") || "#e2e8f0";
       ctx.fillRect(L, yy + 2, width - L - R, ROW - 4);
       for (let i = 0; i < route.n - 1; i++) {
         const val = m.iri[i];
@@ -44,7 +46,7 @@ export function CoverageChart({ v }: { v: View }) {
         ctx.fillRect(x(route.km[i]), yy + 2, x(route.km[i + 1]) - x(route.km[i]) + 0.6, ROW - 4);
       }
       const sel = v.selection === m.ds.id;
-      ctx.fillStyle = sel ? "#0f172a" : "#475569";
+      ctx.fillStyle = sel ? cssVar("--chart-ink") : cssVar("--ink-muted");
       ctx.font = `${sel ? "600 " : ""}12px Inter, system-ui, sans-serif`;
       ctx.textAlign = "right";
       let lb = m.label;
@@ -52,13 +54,13 @@ export function CoverageChart({ v }: { v: View }) {
       if (lb !== m.label) lb += "…";
       ctx.fillText(lb, L - 10, yy + ROW / 2);
     });
-    ctx.fillStyle = "#64748b";
+    ctx.fillStyle = cssVar("--ink-faint");
     ctx.font = "12px Inter, system-ui, sans-serif";
     ctx.textAlign = "center";
     const step = total > 40 ? 10 : total > 15 ? 5 : total > 6 ? 2 : 1;
     for (let k = 0; k <= Math.floor(total); k += step) ctx.fillText(fmtCh(k), Math.max(L + 14, x(k)), H - 10);
     const cx = x(route.km[v.cur] + (v.cur < route.n - 1 ? (route.km[v.cur + 1] - route.km[v.cur]) / 2 : 0));
-    ctx.strokeStyle = "#0f172a";
+    ctx.strokeStyle = cssVar("--chart-ink");
     ctx.globalAlpha = 0.75;
     ctx.lineWidth = 1.5;
     ctx.beginPath();
@@ -67,7 +69,7 @@ export function CoverageChart({ v }: { v: View }) {
     ctx.stroke();
     ctx.globalAlpha = 1;
   }, [route, v.color, v.cur, v.selection, width, H, rows]);
-  useEffect(() => draw(), [draw]);
+  useEffect(() => draw(), [draw, theme]);
 
   const pick = (clientX: number) => {
     const c = cv.current;

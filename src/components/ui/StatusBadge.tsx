@@ -1,7 +1,7 @@
 import type { ProgressStatus } from "@/lib/collection-utils";
 
 const STYLES: Record<ProgressStatus, string> = {
-  "not-started": "bg-slate-100 text-slate-600 border-slate-200",
+  "not-started": "bg-surface-2 text-ink-muted border-line",
   "in-progress": "bg-warning-50 text-warning border-warning/20",
   completed: "bg-success-50 text-success border-success/20",
 };

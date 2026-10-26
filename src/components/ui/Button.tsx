@@ -5,9 +5,9 @@ type Variant = "primary" | "secondary" | "ghost";
 type Size = "md" | "lg";
 
 const BASE =
-  "inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg font-medium whitespace-nowrap select-none disabled:cursor-not-allowed disabled:opacity-60";
+  "tp-btn inline-flex shrink-0 items-center justify-center gap-1.5 rounded-lg font-medium whitespace-nowrap select-none disabled:cursor-not-allowed disabled:opacity-60";
 const VARIANT: Record<Variant, string> = {
-  primary: "bg-navy text-white shadow-card hover:bg-[#10284a] active:bg-[#0c2040]",
+  primary: "bg-primary text-on-accent shadow-card hover:bg-primary-dark active:bg-primary-dark",
   secondary: "border border-line bg-surface text-ink hover:border-navy/40 hover:bg-navy-50",
   ghost: "text-ink-muted hover:bg-navy-50 hover:text-ink",
 };

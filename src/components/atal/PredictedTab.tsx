@@ -20,8 +20,8 @@ const RouteMap = dynamic(() => import("./RouteMap"), {
   loading: () => <div className="grid h-full place-items-center text-sm text-ink-muted">Loading map</div>,
 });
 
-const POOR = "#b91c1c";
-const GOOD = "#15803d";
+const POOR = "var(--danger)";
+const GOOD = "var(--success)";
 
 function BlockPanel({ b, i, n, mean, place }: { b: ModelBlock; i: number; n: number; mean: number; place?: ModelPlacement }) {
   const rating = ratingById(DEFAULT_RATING_ID);
@@ -121,7 +121,7 @@ export default function PredictedTab({ blocks, placement }: { blocks: ModelBlock
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <Card title="Map of predicted IRI">
-          <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-slate-100">
+          <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-surface-2">
             <RouteMap segs={segs} colors={colors} flags={flags} cur={c} setCur={setCur} startLabel={`Start, model chainage ${fmtCh(sum.startKm)}`} endLabel={`End, model chainage ${fmtCh(sum.endKm)}`} ariaLabel="Route map coloured by predicted IRI" />
           </div>
           <MapLegend note={`Red halo: block length by coordinates is more than ${LEN_TOL_M} m off 50 m`} />
@@ -132,8 +132,8 @@ export default function PredictedTab({ blocks, placement }: { blocks: ModelBlock
       </div>
 
       <Card title="Condition by length of road" subtitle={`IRC:SP:16-2019 ${nm.table}. Good below ${rating.good.toFixed(2)}, Poor above ${rating.fair.toFixed(2)}.`}>
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((k) => `${k} ${share(k).toFixed(1)} percent`).join(", ")}>
-          {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (share(k) > 0 ? <span key={k} style={{ width: `${share(k)}%`, background: CLASS_COLOR[k] }} /> : null))}
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-2" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((k) => `${k} ${share(k).toFixed(1)} percent`).join(", ")}>
+          {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (share(k) > 0 ? <span key={k} className="tp-grow" style={{ width: `${share(k)}%`, background: CLASS_COLOR[k] }} /> : null))}
         </div>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (
@@ -150,8 +150,8 @@ export default function PredictedTab({ blocks, placement }: { blocks: ModelBlock
         title="Block length check"
         subtitle={`Distance between each block's start and end coordinates, against the labelled 50 m. By coordinates the route is ${chk.coordKm.toFixed(2)} km, labelled ${chk.labelledKm.toFixed(2)} km.`}
       >
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={chk.buckets.map((k) => `${k.label}: ${k.count} blocks`).join(", ")}>
-          {chk.buckets.map((k) => (k.count ? <span key={k.label} style={{ width: `${(100 * k.count) / total}%`, background: k.color }} /> : null))}
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-2" role="img" aria-label={chk.buckets.map((k) => `${k.label}: ${k.count} blocks`).join(", ")}>
+          {chk.buckets.map((k) => (k.count ? <span key={k.label} className="tp-grow" style={{ width: `${(100 * k.count) / total}%`, background: k.color }} /> : null))}
         </div>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {chk.buckets.map((k) => (
@@ -224,7 +224,7 @@ export default function PredictedTab({ blocks, placement }: { blocks: ModelBlock
             onClick={() =>
               downloadCsv("predicted_iri_blocks.csv", ["start_chainage_m", "end_chainage_m", "predicted_iri", "speed_kmh", "readings", "length_by_coordinates_m", "length_off_m", "start_lat", "start_lon", "end_lat", "end_lon"], blocks.map((x) => [x.startM, x.endM, x.iri, Number.isFinite(x.speed) ? x.speed.toFixed(1) : "", x.samples, x.lenM.toFixed(1), x.devM.toFixed(1), x.lat, x.lon, x.endLat, x.endLon]))
             }
-            className="inline-flex items-center rounded-lg border-[1.5px] border-primary/50 bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50"
+            className="inline-flex items-center rounded-lg border-[1.5px] border-outline bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50"
           >
             Download CSV
           </button>

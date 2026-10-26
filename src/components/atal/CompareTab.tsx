@@ -18,8 +18,8 @@ const RouteMap = dynamic(() => import("./RouteMap"), {
   loading: () => <div className="grid h-full place-items-center text-sm text-ink-muted">Loading map</div>,
 });
 
-const POOR = "#b91c1c";
-const GOOD = "#15803d";
+const POOR = "var(--danger)";
+const GOOD = "var(--success)";
 const DIFF_RANGE = 3;
 const LOW = [29, 78, 216];
 const MID = [241, 245, 249];
@@ -115,7 +115,7 @@ export default function CompareTab({ al }: { al: Alignment }) {
             <span className="inline-flex items-center gap-2"><span className="h-[3px] w-5 rounded bg-ink" />NSV</span>
             <span className="inline-flex items-center gap-2"><span className="h-[3px] w-5 rounded" style={{ background: MODEL_COLOR }} />Model</span>
             <span className="inline-flex items-center gap-2"><span className="h-2.5 w-3 rounded-sm" style={{ background: MODEL_COLOR }} />Model higher</span>
-            <span className="inline-flex items-center gap-2"><span className="h-2.5 w-3 rounded-sm" style={{ background: "#1d4ed8" }} />Model lower</span>
+            <span className="inline-flex items-center gap-2"><span className="h-2.5 w-3 rounded-sm" style={{ background: "var(--series-lwp)" }} />Model lower</span>
             <span className="inline-flex items-center gap-2"><span className="w-5 border-t-2 border-dashed" style={{ borderColor: POOR }} />Poor above {rating.fair.toFixed(2)}</span>
             <span className="inline-flex items-center gap-2"><span className="w-5 border-t-2 border-dashed" style={{ borderColor: GOOD }} />Good below {rating.good.toFixed(2)}</span>
           </>
@@ -145,7 +145,7 @@ export default function CompareTab({ al }: { al: Alignment }) {
               ].map((m) => (
                 <div key={m.k}>
                   <p className="mb-2 text-sm font-semibold text-ink">{m.t}</p>
-                  <div className="h-[28rem] overflow-hidden rounded-lg border border-line bg-slate-100">
+                  <div className="h-[28rem] overflow-hidden rounded-lg border border-line bg-surface-2">
                     <RouteMap segs={segs} colors={m.colors} flags={m.k === "model" ? flags : undefined} cur={c} setCur={setCur} syncKey="atal-compare" startLabel={`Start, NSV chainage ${chM(starts[0])}`} endLabel={`End, NSV chainage ${chM(ends[n - 1])}`} ariaLabel={`Route map coloured by ${m.t} IRI`} />
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export default function CompareTab({ al }: { al: Alignment }) {
           </>
         ) : (
           <>
-            <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-slate-100">
+            <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-surface-2">
               <RouteMap segs={segs} colors={diffColors} cur={c} setCur={setCur} startLabel={`Start, NSV chainage ${chM(starts[0])}`} endLabel={`End, NSV chainage ${chM(ends[n - 1])}`} ariaLabel="Route map coloured by model minus NSV IRI" />
             </div>
             <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-ink-muted">
@@ -236,7 +236,7 @@ export default function CompareTab({ al }: { al: Alignment }) {
                     {CLASSES.map((ck, b) => {
                       const v = stats.matrix[a][b];
                       return (
-                        <td key={ck} className={`rounded-md px-3 py-3 text-center tabular-nums ${a === b ? "font-semibold" : ""}`} style={{ background: `rgba(29,78,216,${Math.min(0.55, (v / stats.n) * 1.6)})`, color: v / stats.n > 0.3 ? "#fff" : "#0f172a" }}>
+                        <td key={ck} className={`rounded-md px-3 py-3 text-center tabular-nums ${a === b ? "font-semibold" : ""}`} style={{ background: `rgba(29,78,216,${Math.min(0.55, (v / stats.n) * 1.6)})`, color: v / stats.n > 0.3 ? "#fff" : "var(--ink)" }}>
                           {v}
                           <span className="ml-1 text-xs opacity-80">{tot ? `${Math.round((100 * v) / tot)}%` : ""}</span>
                         </td>
@@ -263,7 +263,7 @@ export default function CompareTab({ al }: { al: Alignment }) {
                 rows.map((x, i) => [x.nsv.startM, x.nsv.endM, x.nsv.lwp, x.nsv.rwp, x.nsv.avg, used[i] ? (x.model as number).toFixed(3) : "", used[i] ? ((x.model as number) - x.nsv.avg).toFixed(3) : "", x.coverage.toFixed(2), x.uncertain ? "yes" : "no", x.fromM ?? "", x.toM ?? ""]),
               )
             }
-            className="inline-flex items-center rounded-lg border-[1.5px] border-primary/50 bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50"
+            className="inline-flex items-center rounded-lg border-[1.5px] border-outline bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50"
           >
             Download CSV
           </button>

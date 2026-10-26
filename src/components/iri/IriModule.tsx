@@ -253,7 +253,7 @@ export default function IriModule() {
         <div className="flex shrink-0 gap-2">
           <Button variant="primary" onClick={() => openPanel("files")} ariaHaspopup="dialog">
             Data input
-            {files.length ? <span className="rounded-full bg-white/20 px-1.5 text-[11px] font-semibold tabular-nums">{files.length}</span> : null}
+            {files.length ? <span className="rounded-full bg-on-accent/20 px-1.5 text-[11px] font-semibold tabular-nums">{files.length}</span> : null}
           </Button>
           <Button onClick={() => openPanel("basis")} ariaHaspopup="dialog" disabled={!route}>Rating basis</Button>
         </div>
@@ -291,7 +291,7 @@ export default function IriModule() {
                     label="Driver"
                     value={sel}
                     onChange={(v) => setSelection(v)}
-                    options={[{ id: "avg", label: "All drivers (average)", swatch: "#0f172a" }, ...route.active.map((m) => ({ id: m.ds.id, label: m.label, swatch: m.color }))]}
+                    options={[{ id: "avg", label: "All drivers (average)", swatch: "var(--chart-ink)" }, ...route.active.map((m) => ({ id: m.ds.id, label: m.label, swatch: m.color }))]}
                   />
                 </div>
               </div>

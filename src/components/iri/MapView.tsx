@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import type { View } from "./view";
 import { colorCss } from "@/lib/iri/scale";
 import { fmtCh } from "@/lib/iri/format";
+import { mapInk, useTheme } from "@/lib/theme";
 
 // The base map is fixed to OpenStreetMap, drawn faint so the IRI colours stand out.
 const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
@@ -22,6 +23,8 @@ export default function MapView({ v }: { v: View }) {
   const marker = useRef<L.Polyline | null>(null);
   const pts = useRef<L.LatLngTuple[]>([]);
   const live = useRef({ n: 0, setCur: v.setCur });
+  const theme = useTheme();
+  const deco = useRef<{ halo: L.Polyline | null; others: L.Polyline[]; dots: L.CircleMarker[] }>({ halo: null, others: [], dots: [] });
 
   useEffect(() => {
     live.current = { n: v.route.n, setCur: v.setCur };
@@ -98,29 +101,47 @@ export default function MapView({ v }: { v: View }) {
     const g = group.current;
     if (!m || !g) return;
     g.clearLayers();
+    const ink = mapInk();
+    deco.current = { halo: null, others: [], dots: [] };
     v.routes.forEach((r) => {
       if (r.id !== route.id) {
-        g.addLayer(L.polyline(r.lat.map((la, i) => [la, r.lon[i]] as L.LatLngTuple), { color: "#94a3b8", weight: 4, opacity: 0.6 }).bindTooltip(r.name, { sticky: true }));
+        const o = L.polyline(r.lat.map((la, i) => [la, r.lon[i]] as L.LatLngTuple), { color: ink.other, weight: 4, opacity: 0.5 }).bindTooltip(r.name, { sticky: true });
+        deco.current.others.push(o);
+        g.addLayer(o);
       }
     });
     const P = route.lat.map((la, i) => [la, route.lon[i]] as L.LatLngTuple);
     pts.current = P;
-    g.addLayer(L.polyline(P, { color: "#64748b", weight: 10, opacity: 0.22, interactive: false }));
+    deco.current.halo = L.polyline(P, { color: ink.halo, weight: 10, opacity: 0.22, interactive: false });
+    g.addLayer(deco.current.halo);
     blocks.current = [];
     for (let i = 0; i < route.n - 1; i++) {
       const pl = L.polyline([P[i], P[i + 1]], { weight: 6, lineCap: "round", opacity: 0.97, interactive: false });
       g.addLayer(pl);
       blocks.current.push(pl);
     }
-    marker.current = L.polyline([P[0], P[1]], { weight: 13, color: "#0f172a", opacity: 0.85, lineCap: "round", interactive: false });
+    marker.current = L.polyline([P[0], P[1]], { weight: 13, color: ink.marker, opacity: 0.85, lineCap: "round", interactive: false });
     g.addLayer(marker.current);
-    const dot = (ll: L.LatLngTuple, tip: string) =>
-      g.addLayer(L.circleMarker(ll, { radius: 7, color: "#ffffff", weight: 2, fillColor: "#0f172a", fillOpacity: 1 }).bindTooltip(tip));
+    const dot = (ll: L.LatLngTuple, tip: string) => {
+      const d = L.circleMarker(ll, { radius: 7, color: ink.ring, weight: 2, fillColor: ink.marker, fillOpacity: 1 }).bindTooltip(tip);
+      deco.current.dots.push(d);
+      g.addLayer(d);
+    };
     dot(P[0], "Start, chainage 0+000");
     dot(P[P.length - 1], `End, chainage ${fmtCh(route.km[route.n - 1])}`);
     m.invalidateSize();
     m.fitBounds(L.latLngBounds(P), { padding: [24, 24] });
   }, [route, v.routes]);
+
+  // plain map furniture follows the theme
+  useEffect(() => {
+    const ink = mapInk();
+    const d = deco.current;
+    d.halo?.setStyle({ color: ink.halo });
+    d.others.forEach((o) => o.setStyle({ color: ink.other }));
+    d.dots.forEach((x) => x.setStyle({ color: ink.ring, fillColor: ink.marker }));
+    marker.current?.setStyle({ color: ink.marker });
+  }, [theme]);
 
   // colours
   useEffect(() => {

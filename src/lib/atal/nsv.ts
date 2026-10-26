@@ -162,10 +162,10 @@ export function summariseBlocks(starts: number[], ends: number[], values: number
 export const summariseNsv = (b: NsvBlock[], r: Rating) =>
   summariseBlocks(b.map((x) => x.startM), b.map((x) => x.endM), b.map((x) => x.avg), r);
 
-export const NSV_COLOR = "#0f172a";
-export const MODEL_COLOR = "#c2410c";
-export const LWP_COLOR = "#1e40af";
-export const RWP_COLOR = "#b45309";
+export const NSV_COLOR = "var(--chart-ink)";
+export const MODEL_COLOR = "var(--series-model)";
+export const LWP_COLOR = "var(--series-lwp)";
+export const RWP_COLOR = "var(--series-rwp)";
 
 /** Map colour range for the IRI ramp (m/km), the same for every map in this submodule. */
 export const MAP_LO = 0.5;

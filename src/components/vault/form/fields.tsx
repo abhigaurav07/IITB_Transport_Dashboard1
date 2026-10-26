@@ -5,7 +5,7 @@ import type { ProjectLink } from "@/lib/projects/types";
 import type { FieldDef, FormState } from "@/lib/projects/schema";
 
 export const inputCls =
-  "min-h-10 w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-slate-400 hover:border-navy/40 aria-[invalid=true]:border-danger aria-[invalid=true]:bg-danger-50/40";
+  "min-h-10 w-full rounded-lg border border-line bg-field px-3 py-2 text-sm text-ink placeholder:text-ink-faint hover:border-primary/50 focus:border-primary aria-[invalid=true]:border-danger aria-[invalid=true]:bg-danger-50/40";
 
 export function isUrl(s: string) {
   try {
@@ -46,7 +46,7 @@ function TagsInput({ value, onChange, placeholder, id }: { value: string[]; onCh
     setDraft("");
   };
   return (
-    <div className="flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-line bg-white px-2 py-1.5 focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-primary">
+    <div className="flex min-h-[42px] flex-wrap items-center gap-1.5 rounded-lg border border-line bg-field px-2 py-1.5 focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-primary">
       {value.map((t) => (
         <span key={t} className="inline-flex items-center gap-1 rounded-md bg-primary-50 px-2 py-0.5 text-xs font-medium text-primary">
           {t}
@@ -67,7 +67,7 @@ function TagsInput({ value, onChange, placeholder, id }: { value: string[]; onCh
         }}
         onBlur={add}
         placeholder={value.length ? "" : placeholder}
-        className="min-w-[120px] flex-1 bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-slate-400"
+        className="min-w-[120px] flex-1 bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-ink-faint"
       />
     </div>
   );
@@ -148,7 +148,7 @@ export function FieldControl({
             <div className="relative overflow-hidden rounded-lg border border-line">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={v.cover} alt="Cover preview" className="h-40 w-full object-cover" />
-              <button type="button" onClick={() => set("cover", "")} className="absolute right-2 top-2 rounded-md bg-white/90 px-2 py-1 text-xs font-medium text-ink shadow-sm hover:bg-white">
+              <button type="button" onClick={() => set("cover", "")} className="absolute right-2 top-2 rounded-md bg-surface/90 px-2 py-1 text-xs font-medium text-ink shadow-sm hover:bg-surface">
                 Remove
               </button>
             </div>

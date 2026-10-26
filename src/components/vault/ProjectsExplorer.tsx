@@ -80,8 +80,8 @@ export default function ProjectsExplorer() {
 
       {shown.length ? (
         <div className="mt-3 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {shown.map((p) => (
-            <ProjectCard key={p.id} p={p} datasets={summary.has(p.id) ? { count: summary.get(p.id)!.count, categories: summary.get(p.id)!.cats.size } : undefined} />
+          {shown.map((p, i) => (
+            <ProjectCard key={p.id} index={i} p={p} datasets={summary.has(p.id) ? { count: summary.get(p.id)!.count, categories: summary.get(p.id)!.cats.size } : undefined} />
           ))}
         </div>
       ) : (

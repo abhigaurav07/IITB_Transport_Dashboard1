@@ -21,9 +21,9 @@ export interface ChartPanel {
 
 const M = { l: 52, r: 44, t: 14, b: 34 };
 const GAP = 30;
-const INK = "#0f172a";
-const AXIS = "#334155";
-const GRID = "#e2e8f0";
+const INK = "var(--chart-ink)";
+const AXIS = "var(--chart-axis)";
+const GRID = "var(--chart-grid)";
 const MIN_SPAN_KM = 0.25;
 
 function niceStep(span: number, target = 8): number {
@@ -219,7 +219,7 @@ export default function ProfileChart({
             for (let t = Math.ceil(y0 / ys) * ys; t <= y1 + 1e-9; t += ys) yTicks.push(Math.round(t * 1e6) / 1e6);
             return (
               <g key={k}>
-                <rect x={M.l} y={top} width={Math.max(0, plotW)} height={p.height} fill="#ffffff" stroke={GRID} />
+                <rect x={M.l} y={top} width={Math.max(0, plotW)} height={p.height} fill="var(--chart-plot)" stroke={GRID} />
                 {yTicks.map((t) => (
                   <g key={t}>
                     <line x1={M.l} x2={W - M.r} y1={y(t)} y2={y(t)} stroke={t === 0 && p.kind === "diff" ? AXIS : GRID} strokeWidth={t === 0 && p.kind === "diff" ? 1.4 : 1} />
@@ -250,7 +250,7 @@ export default function ProfileChart({
                         })}
                       </g>
                     ) : (
-                      <path key={s.key} d={stepPath(s, y, y1)} fill="none" stroke={s.color} strokeWidth={(s.width ?? 1.9) + (zoomed ? 0.5 : 0)} strokeLinejoin="round" />
+                      <path key={s.key} d={stepPath(s, y, y1)} fill="none" stroke={s.color} strokeWidth={(s.width ?? 1.9) + (zoomed ? 0.5 : 0)} strokeLinejoin="round" pathLength={1} className="tp-draw-chart" />
                     ),
                   )}
                   {cx >= M.l && cx <= W - M.r ? (
@@ -260,7 +260,7 @@ export default function ProfileChart({
                         .filter((s) => s.kind !== "bars")
                         .map((s) => {
                           const val = s.values[cur];
-                          return val == null ? null : <circle key={s.key} cx={cx} cy={y(Math.min(val, y1))} r={4.5} fill="#fff" stroke={s.color} strokeWidth={2.2} />;
+                          return val == null ? null : <circle key={s.key} cx={cx} cy={y(Math.min(val, y1))} r={4.5} fill="var(--chart-plot)" stroke={s.color} strokeWidth={2.2} />;
                         })}
                     </>
                   ) : null}

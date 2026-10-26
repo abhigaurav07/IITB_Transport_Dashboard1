@@ -6,12 +6,13 @@ import ProjectArt from "./ProjectArt";
 import Tag from "@/components/ui/Tag";
 import { ChevronRightIcon } from "@/components/icons";
 
-export default function ProjectCard({ p, datasets }: { p: Project; datasets?: { count: number; categories: number } }) {
+export default function ProjectCard({ p, datasets, index = 0 }: { p: Project; datasets?: { count: number; categories: number }; index?: number }) {
   const href = p.href ?? `/projects/${p.slug}`;
   return (
     <Link
       href={href}
-      className="group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-card hover:-translate-y-0.5 hover:border-navy/30 hover:shadow-lift"
+      style={{ "--d": `${Math.min(index, 8) * 0.05}s` } as React.CSSProperties}
+      className="tp-fade group flex h-full flex-col overflow-hidden rounded-xl border border-line bg-surface shadow-card transition-[translate,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lift"
     >
       <div className="h-36 overflow-hidden border-b border-line-soft">
         {p.cover ? (

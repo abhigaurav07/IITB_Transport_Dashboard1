@@ -20,7 +20,7 @@ const subscribeMotion = (cb: () => void) => {
 type Slide = { key: string; label: string; node: React.ReactNode };
 
 const ILLUSTRATIONS: Slide[] = [
-  { key: "alignment", label: "Road alignment illustration", node: <HeroGraphic className="h-full w-full bg-white p-6" /> },
+  { key: "alignment", label: "Road alignment illustration", node: <HeroGraphic className="h-full w-full bg-surface p-6" /> },
   { key: "bridge", label: "Bridge profile illustration", node: <ProjectArt project={{ slug: "atal-setu" }} /> },
   { key: "profile", label: "Longitudinal profile illustration", node: <ProjectArt project={{ slug: "kasara" }} /> },
 ];
@@ -80,7 +80,7 @@ export default function PhotoSlider({ className = "" }: { className?: string }) 
     return () => clearInterval(t);
   }, [playing, n]);
 
-  const btn = "flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white/95 text-navy shadow-card hover:bg-white";
+  const btn = "flex h-9 w-9 items-center justify-center rounded-full border border-line bg-white/95 text-[#17365d] shadow-card hover:bg-white";
 
   return (
     <div

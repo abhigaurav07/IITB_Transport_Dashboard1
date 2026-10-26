@@ -6,8 +6,8 @@ import { CLASS_COLOR } from "@/lib/iri/scale";
 
 /* ---------- Tabs: rounded squares with a clear coloured boundary ---------- */
 const TAB_BASE = "inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg border-[1.5px] px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary";
-const TAB_ON = "border-primary bg-primary text-white shadow-sm";
-const TAB_OFF = "border-primary/45 bg-surface text-ink hover:border-primary hover:bg-primary-50 hover:text-primary";
+const TAB_ON = "border-primary bg-primary text-on-accent shadow-sm";
+const TAB_OFF = "border-outline bg-surface text-ink hover:border-primary hover:bg-primary-50 hover:text-primary";
 export interface TabDef<T extends string> {
   id: T;
   label: string;
@@ -52,7 +52,7 @@ export function Tabs<T extends string>({
             onClick={() => onChange(t.id)}
             className={`${TAB_BASE} ${on ? TAB_ON : TAB_OFF}`}
           >
-            <span className={`text-[11px] tabular-nums ${on ? "text-white/80" : "text-primary/70"}`}>{k + 1}</span>
+            <span className={`text-[11px] tabular-nums ${on ? "text-on-accent/80" : "text-primary/70"}`}>{k + 1}</span>
             {t.label}
           </button>
         );
@@ -85,7 +85,7 @@ export function Segmented<T extends string>({
             onClick={() => onChange(o.id)}
             className={`${TAB_BASE} !py-1.5 text-[13px] ${on ? TAB_ON : TAB_OFF}`}
           >
-            {o.swatch ? <span className={`h-2.5 w-2.5 rounded-sm ${on ? "ring-2 ring-white" : ""}`} style={{ background: o.swatch }} aria-hidden /> : null}
+            {o.swatch ? <span className={`h-2.5 w-2.5 rounded-sm ${on ? "ring-2 ring-on-accent" : ""}`} style={{ background: o.swatch }} aria-hidden /> : null}
             {o.label}
           </button>
         );
@@ -152,8 +152,8 @@ export function Button({
   ariaHaspopup?: "dialog";
 }) {
   const v = {
-    primary: "bg-primary text-white hover:bg-primary-dark border-primary",
-    outline: "bg-surface text-primary hover:bg-primary-50 border-primary/50 border-[1.5px]",
+    primary: "bg-primary text-on-accent hover:bg-primary-dark border-primary",
+    outline: "bg-surface text-primary hover:bg-primary-50 border-outline border-[1.5px]",
     ghost: "bg-transparent text-ink-muted hover:bg-canvas border-transparent",
     danger: "bg-surface text-danger hover:bg-danger-50 border-line",
   }[variant];

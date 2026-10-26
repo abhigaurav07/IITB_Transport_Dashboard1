@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { NO_DATA } from "@/lib/iri/scale";
+import { mapInk, useTheme } from "@/lib/theme";
 
 const OSM_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_ATTR = "© OpenStreetMap contributors";
@@ -44,6 +45,8 @@ export default function RouteMap({
   const polys = useRef<L.Polyline[]>([]);
   const segsRef = useRef<MapSeg[]>(segs);
   const live = useRef({ setCur });
+  const theme = useTheme();
+  const deco = useRef<{ halo: L.Polyline | null; dots: L.CircleMarker[] }>({ halo: null, dots: [] });
 
   useEffect(() => {
     live.current = { setCur };
@@ -57,7 +60,10 @@ export default function RouteMap({
     L.control.scale({ imperial: false }).addTo(m);
     L.tileLayer(OSM_URL, { attribution: OSM_ATTR, opacity: 0.6, maxZoom: 19 }).addTo(m);
     const g = L.layerGroup().addTo(m);
-    g.addLayer(L.polyline(segs.map((s) => s.a), { color: "#64748b", weight: 10, opacity: 0.22, interactive: false }));
+    const ink = mapInk();
+    deco.current = { halo: null, dots: [] };
+    deco.current.halo = L.polyline(segs.map((s) => s.a), { color: ink.halo, weight: 10, opacity: 0.22, interactive: false });
+    g.addLayer(deco.current.halo);
     flags?.forEach((f, i) => {
       if (f) g.addLayer(L.polyline([segs[i].a, segs[i].b], { color: "#dc2626", weight: 14, opacity: 0.45, lineCap: "round", interactive: false }));
     });
@@ -66,9 +72,12 @@ export default function RouteMap({
       g.addLayer(pl);
       return pl;
     });
-    marker.current = L.polyline([segs[0].a, segs[0].b], { weight: 13, color: "#0f172a", opacity: 0.85, lineCap: "round", interactive: false }).addTo(m);
-    const dot = (ll: L.LatLngTuple, tip: string) =>
-      g.addLayer(L.circleMarker(ll, { radius: 7, color: "#ffffff", weight: 2, fillColor: "#0f172a", fillOpacity: 1 }).bindTooltip(tip));
+    marker.current = L.polyline([segs[0].a, segs[0].b], { weight: 13, color: ink.marker, opacity: 0.85, lineCap: "round", interactive: false }).addTo(m);
+    const dot = (ll: L.LatLngTuple, tip: string) => {
+      const d = L.circleMarker(ll, { radius: 7, color: ink.ring, weight: 2, fillColor: ink.marker, fillOpacity: 1 }).bindTooltip(tip);
+      deco.current.dots.push(d);
+      g.addLayer(d);
+    };
     dot(segs[0].a, startLabel);
     dot(segs[segs.length - 1].b, endLabel);
     m.fitBounds(L.latLngBounds(segs.map((s) => s.a)), { padding: [24, 24] });
@@ -129,6 +138,13 @@ export default function RouteMap({
     // the map is rebuilt only when the geometry changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [segs, flags, syncKey]);
+
+  useEffect(() => {
+    const ink = mapInk();
+    deco.current.halo?.setStyle({ color: ink.halo });
+    deco.current.dots.forEach((x) => x.setStyle({ color: ink.ring, fillColor: ink.marker }));
+    marker.current?.setStyle({ color: ink.marker });
+  }, [theme]);
 
   useEffect(() => {
     polys.current.forEach((pl, i) => {

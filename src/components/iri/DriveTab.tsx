@@ -9,6 +9,7 @@ import { fmt, fmtCh, tickStep } from "@/lib/iri/format";
 import { conditionOf } from "@/lib/iri/rating";
 import { colorCss, NO_DATA } from "@/lib/iri/scale";
 import { blockLenM } from "@/lib/iri/routes";
+import { cssVar, useTheme } from "@/lib/theme";
 
 function parseChainage(t: string): number | null {
   const s = t.trim();
@@ -26,6 +27,7 @@ function parseChainage(t: string): number | null {
 export default function DriveTab({ v }: { v: View }) {
   const { route, cur } = v;
   const geo = useMemo(() => makeGeo(route), [route]);
+  const theme = useTheme();
   const [wrap, width] = useWidth<HTMLDivElement>();
   const canvas = useRef<HTMLCanvasElement>(null);
   const strip = useRef<HTMLCanvasElement>(null);
@@ -77,7 +79,7 @@ export default function DriveTab({ v }: { v: View }) {
     const ctx = cv.getContext("2d");
     if (!ctx) return;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.fillStyle = NO_DATA;
+    ctx.fillStyle = cssVar("--chart-grid") || NO_DATA;
     ctx.fillRect(0, 0, W, 18);
     const total = route.km[route.n - 1];
     for (let i = 0; i < route.n - 1; i++) {
@@ -88,7 +90,7 @@ export default function DriveTab({ v }: { v: View }) {
       const x1 = (route.km[i + 1] / total) * W;
       ctx.fillRect(x0, 0, x1 - x0 + 0.6, 18);
     }
-  }, [route, v.series, v.color, width]);
+  }, [route, v.series, v.color, width, theme]);
 
   // animation
   useEffect(() => {
@@ -154,7 +156,7 @@ export default function DriveTab({ v }: { v: View }) {
       <div ref={wrap} className="relative overflow-hidden rounded-lg border border-line bg-sky-100">
         <canvas ref={canvas} className="block h-[28rem] w-full" aria-label="First-person view of the road coloured by IRI" />
         <div className="pointer-events-none absolute inset-x-3 top-3 flex flex-wrap gap-2.5">
-          <div className="min-w-[9.5rem] rounded-lg border border-slate-900/10 bg-white/95 px-3 py-2 shadow-sm">
+          <div className="min-w-[9.5rem] rounded-lg border border-line bg-surface/95 px-3 py-2 shadow-sm">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted">Chainage</p>
             <p className="text-2xl font-semibold tabular-nums leading-tight text-ink">{fmtCh(route.km[i])}</p>
             <p className="text-[11px] text-ink-muted">
@@ -162,13 +164,13 @@ export default function DriveTab({ v }: { v: View }) {
             </p>
           </div>
           {v.selection !== "avg" ? (
-            <div className="min-w-[8.5rem] rounded-lg border border-slate-900/10 bg-white/95 px-3 py-2 shadow-sm">
+            <div className="min-w-[8.5rem] rounded-lg border border-line bg-surface/95 px-3 py-2 shadow-sm">
               <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted">{v.selectedLabel}</p>
               <p className="text-2xl font-semibold tabular-nums leading-tight text-ink">{fmt(sv)}</p>
               <p className="text-[11px] text-ink-muted">{conditionOf(sv, v.rating) ?? "not driven here"}</p>
             </div>
           ) : null}
-          <div className="min-w-[8.5rem] rounded-lg border border-slate-900/10 bg-white/95 px-3 py-2 shadow-sm">
+          <div className="min-w-[8.5rem] rounded-lg border border-line bg-surface/95 px-3 py-2 shadow-sm">
             <p className="text-[10px] font-semibold uppercase tracking-wider text-ink-muted">
               Average of {route.nd[i]} driver{route.nd[i] === 1 ? "" : "s"}
             </p>

@@ -85,8 +85,8 @@ export default function SummaryTab({ v, onOpenBasis, onGoBlock }: { v: View; onO
 
       <Card title="Condition by length of road" subtitle={`IRC:SP:16-2019 ${nm.table}. Good below ${rating.good.toFixed(2)}, Poor above ${rating.fair.toFixed(2)}.`}
         action={<button type="button" onClick={onOpenBasis} className="shrink-0 text-xs font-medium text-primary hover:underline">Change basis</button>}>
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((c) => `${c} ${share(c).toFixed(1)} percent`).join(", ")}>
-          {(["Good", "Fair", "Poor"] as Condition[]).map((c) => (share(c) > 0 ? <span key={c} style={{ width: `${share(c)}%`, background: CLASS_COLOR[c] }} /> : null))}
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-2" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((c) => `${c} ${share(c).toFixed(1)} percent`).join(", ")}>
+          {(["Good", "Fair", "Poor"] as Condition[]).map((c) => (share(c) > 0 ? <span key={c} className="tp-grow" style={{ width: `${share(c)}%`, background: CLASS_COLOR[c] }} /> : null))}
         </div>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {(["Good", "Fair", "Poor"] as Condition[]).map((c) => (

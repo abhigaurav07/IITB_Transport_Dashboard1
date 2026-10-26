@@ -5,10 +5,10 @@ import type { Project } from "@/lib/projects/types";
  * suggest each project's subject (lane coverage, measured vs predicted profile,
  * longitudinal profile) and do not represent real measurements.
  */
-const NAVY = "#17365d";
-const BLUE = "#2563eb";
-const GRID = "#e3e8ee";
-const BG = "#f6f8fa";
+const NAVY = "var(--art-line)";
+const BLUE = "var(--art-accent)";
+const GRID = "var(--art-grid)";
+const BG = "var(--art-bg)";
 
 function seed(slug: string) {
   let h = 2166136261;
@@ -33,8 +33,8 @@ function Frame({ children, id }: { children: React.ReactNode; id: string }) {
 
 function Ticks({ y, from = 16, to = 344, step = 24 }: { y: number; from?: number; to?: number; step?: number }) {
   const out = [];
-  for (let x = from, i = 0; x <= to; x += step, i++) out.push(<line key={x} x1={x} x2={x} y1={y} y2={y + (i % 5 === 0 ? 8 : 4)} stroke="#8a97a8" strokeWidth="1" />);
-  return <g>{out}<line x1={from} x2={to} y1={y} y2={y} stroke="#8a97a8" strokeWidth="1" /></g>;
+  for (let x = from, i = 0; x <= to; x += step, i++) out.push(<line key={x} x1={x} x2={x} y1={y} y2={y + (i % 5 === 0 ? 8 : 4)} stroke="var(--art-muted)" strokeWidth="1" />);
+  return <g>{out}<line x1={from} x2={to} y1={y} y2={y} stroke="var(--art-muted)" strokeWidth="1" /></g>;
 }
 
 function LaneCoverage() {
@@ -51,7 +51,7 @@ function LaneCoverage() {
           })}
         </g>
       ))}
-      <line x1="16" x2="344" y1="77" y2="77" stroke="#8a97a8" strokeDasharray="2 4" />
+      <line x1="16" x2="344" y1="77" y2="77" stroke="var(--art-muted)" strokeDasharray="2 4" />
       <path d="M338 20 l8 6 -8 6z" fill={NAVY} />
       <path d="M22 118 l-8 6 8 6z" fill={BLUE} />
       <Ticks y={146} />
@@ -73,9 +73,9 @@ function MeasuredVsPredicted() {
       <path d={d(a)} fill="none" stroke={NAVY} strokeWidth="2" strokeLinejoin="round" />
       <path d={d(b)} fill="none" stroke={BLUE} strokeWidth="1.8" strokeDasharray="5 4" strokeLinejoin="round" />
       {/* bridge deck with pylons, drawn lightly */}
-      <line x1="16" x2="344" y1="116" y2="116" stroke="#8a97a8" strokeWidth="2" />
+      <line x1="16" x2="344" y1="116" y2="116" stroke="var(--art-muted)" strokeWidth="2" />
       {[90, 180, 270].map((x) => (
-        <g key={x} stroke="#8a97a8" strokeWidth="1.2" fill="none">
+        <g key={x} stroke="var(--art-muted)" strokeWidth="1.2" fill="none">
           <path d={`M${x} 116 V98`} />
           <path d={`M${x} 98 L${x - 30} 116 M${x} 98 L${x + 30} 116`} opacity=".6" />
         </g>
@@ -96,12 +96,12 @@ function LongitudinalProfile() {
   return (
     <Frame id="ka">
       {[0, 1, 2].map((k) => (
-        <path key={k} d={d} transform={`translate(0 ${14 + k * 12})`} fill="none" stroke="#c4cfdc" strokeWidth="1" opacity={0.7 - k * 0.2} />
+        <path key={k} d={d} transform={`translate(0 ${14 + k * 12})`} fill="none" stroke="var(--art-soft)" strokeWidth="1" opacity={0.7 - k * 0.2} />
       ))}
       <path d={`${d} L340 140 L20 140 Z`} fill={NAVY} opacity=".07" />
       <path d={d} fill="none" stroke={NAVY} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
       <line x1={mark[0]} x2={mark[0]} y1={mark[1]} y2="140" stroke={BLUE} strokeDasharray="3 3" />
-      <circle cx={mark[0]} cy={mark[1]} r="4.5" fill="#fff" stroke={BLUE} strokeWidth="2" />
+      <circle cx={mark[0]} cy={mark[1]} r="4.5" fill="var(--art-fill)" stroke={BLUE} strokeWidth="2" />
       <Ticks y={140} />
     </Frame>
   );
@@ -119,7 +119,7 @@ function Network({ slug }: { slug: string }) {
         <line key={a} x1={nodes[a][0]} y1={nodes[a][1]} x2={nodes[b][0]} y2={nodes[b][1]} stroke={BLUE} strokeDasharray="3 4" />
       ))}
       {nodes.map(([x, y], i) => (
-        <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? 5.5 : 4} fill="#fff" stroke={i % 3 === 0 ? BLUE : NAVY} strokeWidth="2" />
+        <circle key={i} cx={x} cy={y} r={i % 3 === 0 ? 5.5 : 4} fill="var(--art-fill)" stroke={i % 3 === 0 ? BLUE : NAVY} strokeWidth="2" />
       ))}
     </Frame>
   );

@@ -1,5 +1,5 @@
 import type { ColorCtx } from "@/lib/iri/scale";
-import { CLASS_COLOR, NO_DATA, RAMP_CSS } from "@/lib/iri/scale";
+import { CLASS_COLOR, RAMP_CSS } from "@/lib/iri/scale";
 import type { Condition, Rating } from "@/lib/iri/types";
 
 export function ColorLegend({ color, rating }: { color: ColorCtx; rating: Rating }) {
@@ -16,13 +16,13 @@ export function ColorLegend({ color, rating }: { color: ColorCtx; rating: Rating
       ) : (
         <span className="inline-flex items-center gap-2">
           <span>≤{color.lo.toFixed(1)}</span>
-          <span className="h-2.5 w-44 rounded-full" style={{ background: RAMP_CSS }} aria-hidden />
+          <span className="h-2.5 w-28 rounded-full sm:w-44" style={{ background: RAMP_CSS }} aria-hidden />
           <span>≥{color.hi.toFixed(1)}</span>
           <span>predicted IRI</span>
         </span>
       )}
       <span className="inline-flex items-center gap-2">
-        <span className="h-2.5 w-2.5 rounded-sm border border-slate-300" style={{ background: NO_DATA }} aria-hidden />
+        <span className="h-2.5 w-2.5 rounded-sm border border-line" style={{ background: "var(--chart-grid)" }} aria-hidden />
         Not driven
       </span>
     </div>

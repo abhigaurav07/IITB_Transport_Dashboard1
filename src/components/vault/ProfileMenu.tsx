@@ -34,21 +34,19 @@ export default function ProfileMenu() {
         aria-haspopup="true"
         aria-expanded={open}
         aria-controls={id}
-        className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-navy hover:border-navy/40 hover:bg-navy-50"
+        className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-surface text-ink hover:border-primary/50 hover:bg-navy-50"
       >
         <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden>
           <circle cx="12" cy="8.5" r="3.6" />
           <path strokeLinecap="round" d="M4.8 19.5c.9-3.4 3.8-5.2 7.2-5.2s6.3 1.8 7.2 5.2" />
         </svg>
       </button>
-      {open ? (
-        <div id={id} role="dialog" aria-label="Profile" className="absolute right-0 top-12 z-40 w-72 rounded-xl border border-line bg-surface p-4 shadow-lift">
+      <div id={id} role="dialog" aria-label="Profile" data-open={open} inert={!open} className="tp-pop-menu absolute right-0 top-12 z-40 w-72 rounded-xl border border-line bg-surface p-4 shadow-lift">
           <p className="text-sm font-semibold text-ink">Not signed in</p>
           <p className="mt-1.5 text-[13px] leading-relaxed text-ink-muted">
             Sign-in is not available yet. Once the shared database is connected, you will be able to sign in with Google to create and edit projects.
           </p>
-        </div>
-      ) : null}
+      </div>
     </div>
   );
 }

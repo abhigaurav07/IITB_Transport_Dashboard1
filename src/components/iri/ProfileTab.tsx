@@ -9,12 +9,12 @@ import { fmtCh } from "@/lib/iri/format";
 
 const H = 340;
 const M = { l: 48, r: 44, t: 14, b: 34 };
-const INK = "#0f172a";
-const AXIS = "#334155";
-const GRID = "#e2e8f0";
-const BAND = "#334155";
-const POOR = "#b91c1c";
-const GOOD = "#15803d";
+const INK = "var(--chart-ink)";
+const AXIS = "var(--chart-axis)";
+const GRID = "var(--chart-grid)";
+const BAND = "var(--chart-axis)";
+const POOR = "var(--danger)";
+const GOOD = "var(--success)";
 const MIN_SPAN_KM = 0.25;
 
 function niceStep(span: number, target = 8): number {
@@ -209,7 +209,7 @@ export default function ProfileTab({ v }: { v: View }) {
               <rect x={M.l} y={M.t} width={Math.max(0, plotW)} height={H - M.t - M.b} />
             </clipPath>
           </defs>
-          <rect x={M.l} y={M.t} width={Math.max(0, plotW)} height={H - M.t - M.b} fill="#ffffff" stroke={GRID} />
+          <rect x={M.l} y={M.t} width={Math.max(0, plotW)} height={H - M.t - M.b} fill="var(--chart-plot)" stroke={GRID} />
           {yTicks.map((t) => (
             <g key={t}>
               <line x1={M.l} x2={W - M.r} y1={y(t)} y2={y(t)} stroke={GRID} />
@@ -230,12 +230,12 @@ export default function ProfileTab({ v }: { v: View }) {
             ].map(([t, c]) =>
               (t as number) >= y0 && (t as number) <= y1 ? <line key={c as string} x1={M.l} x2={W - M.r} y1={y(t as number)} y2={y(t as number)} stroke={c as string} strokeWidth={1.6} strokeDasharray="6 4" /> : null,
             )}
-            {paths.sel ? <path d={paths.sel} fill="none" stroke={selColor} strokeWidth={zoomed ? 2.2 : 1.6} opacity={0.95} /> : null}
-            <path d={paths.avg} fill="none" stroke={INK} strokeWidth={zoomed ? 2.4 : 1.9} strokeLinejoin="round" />
+            {paths.sel ? <path d={paths.sel} fill="none" stroke={selColor} strokeWidth={zoomed ? 2.2 : 1.6} opacity={0.95} pathLength={1} className="tp-draw-chart" /> : null}
+            <path d={paths.avg} fill="none" stroke={INK} strokeWidth={zoomed ? 2.4 : 1.9} strokeLinejoin="round" pathLength={1} className="tp-draw-chart" />
             {cx >= M.l && cx <= W - M.r ? (
               <>
                 <line x1={cx} x2={cx} y1={M.t} y2={H - M.b} stroke={INK} opacity={0.6} />
-                {cav != null ? <circle cx={cx} cy={yc(Math.min(cav, y1))} r={5} fill="#fff" stroke={INK} strokeWidth={2.2} /> : null}
+                {cav != null ? <circle cx={cx} cy={yc(Math.min(cav, y1))} r={5} fill="var(--chart-plot)" stroke={INK} strokeWidth={2.2} /> : null}
               </>
             ) : null}
           </g>

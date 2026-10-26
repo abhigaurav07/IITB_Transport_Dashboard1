@@ -18,8 +18,8 @@ const RouteMap = dynamic(() => import("./RouteMap"), {
   loading: () => <div className="grid h-full place-items-center text-sm text-ink-muted">Loading map</div>,
 });
 
-const POOR = "#b91c1c";
-const GOOD = "#15803d";
+const POOR = "var(--danger)";
+const GOOD = "var(--success)";
 
 function BlockPanel({ b, i, n, mean }: { b: NsvBlock; i: number; n: number; mean: number }) {
   const rating = ratingById(DEFAULT_RATING_ID);
@@ -108,7 +108,7 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
       type="button"
       aria-pressed={show[k]}
       onClick={() => setShow((s) => ({ ...s, [k]: !s[k] }))}
-      className={`inline-flex items-center gap-2 rounded-lg border-[1.5px] px-2.5 py-1 text-xs font-medium transition-colors ${show[k] ? "border-primary bg-primary-50 text-primary" : "border-primary/45 bg-surface text-ink hover:border-primary"}`}
+      className={`inline-flex items-center gap-2 rounded-lg border-[1.5px] px-2.5 py-1 text-xs font-medium transition-colors ${show[k] ? "border-primary bg-primary-50 text-primary" : "border-outline bg-surface text-ink hover:border-primary"}`}
     >
       <span className="h-[3px] w-4 rounded" style={{ background: color }} />
       {label}
@@ -145,7 +145,7 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
         <Card title="Map of NSV IRI">
-          <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-slate-100">
+          <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-surface-2">
             <RouteMap segs={segs} colors={colors} cur={c} setCur={setCur} startLabel={`Start, chainage ${fmtCh(sum.startKm)}`} endLabel={`End, chainage ${fmtCh(sum.endKm)}`} ariaLabel="Route map coloured by NSV IRI" />
           </div>
           <MapLegend note="Hover or click the route to read a block" />
@@ -156,8 +156,8 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
       </div>
 
       <Card title="Condition by length of road" subtitle={`IRC:SP:16-2019 ${nm.table}. Good below ${rating.good.toFixed(2)}, Poor above ${rating.fair.toFixed(2)}.`}>
-        <div className="flex h-3 w-full overflow-hidden rounded-full bg-slate-100" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((k) => `${k} ${share(k).toFixed(1)} percent`).join(", ")}>
-          {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (share(k) > 0 ? <span key={k} style={{ width: `${share(k)}%`, background: CLASS_COLOR[k] }} /> : null))}
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-surface-2" role="img" aria-label={(["Good", "Fair", "Poor"] as Condition[]).map((k) => `${k} ${share(k).toFixed(1)} percent`).join(", ")}>
+          {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (share(k) > 0 ? <span key={k} className="tp-grow" style={{ width: `${share(k)}%`, background: CLASS_COLOR[k] }} /> : null))}
         </div>
         <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {(["Good", "Fair", "Poor"] as Condition[]).map((k) => (
@@ -209,7 +209,7 @@ export default function NsvTab({ blocks }: { blocks: NsvBlock[] }) {
             onClick={() =>
               downloadCsv("nsv_iri_50m.csv", ["start_m", "end_m", "lwp_iri", "rwp_iri", "avg_iri", "bi", "speed_kmh", "lat", "lon", "end_lat", "end_lon"], blocks.map((x) => [x.startM, x.endM, x.lwp, x.rwp, x.avg, x.bi, x.speed, x.lat, x.lon, x.endLat, x.endLon]))
             }
-            className="inline-flex items-center rounded-lg border-[1.5px] border-primary/50 bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50"
+            className="inline-flex items-center rounded-lg border-[1.5px] border-outline bg-surface px-2.5 py-1 text-xs font-medium text-primary hover:bg-primary-50"
           >
             Download CSV
           </button>

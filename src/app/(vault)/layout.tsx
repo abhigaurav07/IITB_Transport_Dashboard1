@@ -2,7 +2,7 @@ import VaultHeader from "@/components/vault/VaultHeader";
 
 export default function VaultLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex min-h-screen flex-col bg-canvas">
       <VaultHeader />
       <main className="flex-1">{children}</main>
       <footer className="border-t border-line">

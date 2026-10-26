@@ -395,7 +395,7 @@ export default function NewProjectForm() {
               <Button type="button" onClick={save} disabled={saving || total > 0} aria-busy={saving}>
                 {saving ? (
                   <>
-                    <span aria-hidden className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" />
+                    <span aria-hidden className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-on-accent/40 border-t-on-accent" />
                     Saving
                   </>
                 ) : (

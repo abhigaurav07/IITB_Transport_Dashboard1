@@ -13,7 +13,7 @@ export default function SidebarNav({ onNavigate }: { onNavigate?: () => void }) 
   return (
     <div className="flex h-full min-h-0 flex-col">
       <Link href="/" onClick={onNavigate} className="flex items-center gap-2.5 border-b border-line-soft px-5 py-4">
-        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy text-white">
+        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy text-on-accent">
           <RoadIcon className="h-[18px] w-[18px]" />
         </span>
         <span className="leading-tight">

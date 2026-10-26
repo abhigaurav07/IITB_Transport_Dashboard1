@@ -23,7 +23,7 @@ const TABS = [
   { id: "basis" as const, label: "Rating basis and checks" },
 ];
 const TITLE: Record<PanelTab, string> = { files: "Data input", sum: "Driver summary and coverage", basis: "Rating basis and checks" };
-const MSG_STYLE = { ok: "border-success", warn: "border-amber-400", bad: "border-danger" };
+const MSG_STYLE = { ok: "border-success", warn: "border-warning", bad: "border-danger" };
 
 interface Props {
   open: boolean;
@@ -96,7 +96,7 @@ export default function DataPanel(p: Props) {
   return (
     <>
       <div
-        className={`m-0! fixed inset-0 z-[2000] bg-slate-950/50 transition-opacity duration-200 ${p.open ? "opacity-100" : "pointer-events-none opacity-0"}`}
+        className={`m-0! fixed inset-0 z-[2000] bg-scrim transition-opacity duration-200 ${p.open ? "opacity-100" : "pointer-events-none opacity-0"}`}
         onClick={p.onClose}
         aria-hidden
       />
@@ -150,7 +150,7 @@ function FilesTab(p: Props) {
         onDragOver={(e) => { e.preventDefault(); setOver(true); }}
         onDragLeave={() => setOver(false)}
         onDrop={drop}
-        className={`rounded-xl border-2 border-dashed px-6 py-7 text-center transition-colors ${over ? "border-primary bg-primary-50" : "border-slate-300 bg-surface"}`}
+        className={`rounded-xl border-2 border-dashed px-6 py-7 text-center transition-colors ${over ? "border-primary bg-primary-50" : "border-line bg-surface"}`}
       >
         <input
           ref={input}
@@ -197,7 +197,7 @@ function FilesTab(p: Props) {
                 <tr><td className={`${td} text-ink-muted`} colSpan={7}>No files loaded.</td></tr>
               ) : (
                 p.files.map((f) => (
-                  <tr key={f.id} className={f.include ? "" : "bg-slate-50 text-ink-muted"}>
+                  <tr key={f.id} className={f.include ? "" : "bg-surface-2 text-ink-muted"}>
                     <td className={`${td} max-w-[220px] break-all`}>
                       {f.name}
                       {f.demo ? <span className="ml-2 rounded-full border border-line px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-ink-muted">demo</span> : null}

@@ -192,11 +192,11 @@ function MedianRow({ colCount }: { colCount: number }) {
   return (
     <div
       style={{ gridColumn: `1 / span ${colCount + 1}` }}
-      className="flex items-center justify-center gap-2 bg-ink py-1 text-[10px] font-semibold uppercase tracking-widest text-white/70"
+      className="flex items-center justify-center gap-2 bg-surface-2 py-1 text-[10px] font-semibold uppercase tracking-widest text-ink-muted"
     >
-      <span className="h-px w-6 bg-white/30" aria-hidden />
+      <span className="h-px w-6 bg-line" aria-hidden />
       Median
-      <span className="h-px w-6 bg-white/30" aria-hidden />
+      <span className="h-px w-6 bg-line" aria-hidden />
     </div>
   );
 }
@@ -225,7 +225,7 @@ function LaneRow({
           title={`${label} · Chainage ${formatChainage(cell.from)} to ${formatChainage(cell.to)} · ${STATUS_LABEL[cell.status]}${
             cell.status === "partial" ? ` (${cell.percent.toFixed(0)}%)` : ""
           }`}
-          className={`h-5 border-b border-r border-white/50 ${STATUS_COLOR[cell.status]}`}
+          className={`h-5 border-b border-r border-surface/60 ${STATUS_COLOR[cell.status]}`}
         />
       ))}
     </>

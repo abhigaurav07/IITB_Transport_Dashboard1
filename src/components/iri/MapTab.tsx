@@ -15,7 +15,7 @@ export default function MapTab({ v }: { v: View }) {
   return (
     <div className="grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
       <Card title={v.selection === "avg" ? "Map of average IRI" : `${v.selectedLabel} · map`}>
-        <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-slate-100">
+        <div className="h-[34rem] overflow-hidden rounded-lg border border-line bg-surface-2">
           <MapView v={v} />
         </div>
         <ColorLegend color={v.color} rating={v.rating} />
