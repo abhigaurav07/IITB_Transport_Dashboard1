@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { useAllDatasets, useHydrated, useProject } from "@/lib/projects/store";
+import { useAdditions, useAllDatasets, useHydrated, useProject } from "@/lib/projects/store";
 import { projectDef } from "@/lib/projects/modules";
 import { fmtDate } from "@/lib/projects/format";
 import { EXTRA_FIELDS } from "@/lib/projects/schema";
@@ -12,10 +11,10 @@ import Section from "@/components/ui/Section";
 import Tag from "@/components/ui/Tag";
 import EmptyState from "@/components/ui/EmptyState";
 import { LinkButton } from "@/components/ui/Button";
-import { ChevronRightIcon } from "@/components/icons";
 import StatusChip from "@/components/vault/StatusChip";
 import ProjectArt from "@/components/vault/ProjectArt";
 import DatasetsPanel from "./DatasetsPanel";
+import { ModulesPanel, ResourcesPanel } from "./ModulesResources";
 
 const TABS = [
   { id: "overview", label: "Overview" },
@@ -110,62 +109,6 @@ function Overview({ p, datasetCount, categoryCount, go }: { p: Project; datasetC
   );
 }
 
-function Modules({ p }: { p: Project }) {
-  const def = projectDef(p.slug);
-  if (!def)
-    return <EmptyState title="No modules yet" description="Analyses and results for this project will appear here as modules are added." />;
-  return (
-    <div>
-      <p className="mb-3 text-sm text-ink-muted">Processed data, analyses and results.</p>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {def.modules.map((m) => (
-          <Link
-            key={m.path}
-            href={`/projects/${p.slug}/${m.path}`}
-            className="group flex flex-col justify-between rounded-xl border border-line bg-surface p-5 shadow-card hover:-translate-y-0.5 hover:border-navy/30 hover:shadow-lift"
-          >
-            <div>
-              <div className="flex items-center gap-2.5">
-                {m.number ? <span className="flex h-6 w-6 items-center justify-center rounded-md bg-navy-50 text-xs font-semibold text-navy">{m.number}</span> : null}
-                <h3 className="text-base font-semibold text-ink">{m.label}</h3>
-              </div>
-              <p className="mt-2 text-sm leading-relaxed text-ink-muted">{m.description}</p>
-            </div>
-            <span className="mt-5 inline-flex items-center text-sm font-medium text-primary">
-              Open module
-              <ChevronRightIcon className="ml-0.5 h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Resources({ p }: { p: Project }) {
-  if (!p.links.length && !p.files.length)
-    return <EmptyState title="No resources yet" description="External links and references added to this project are listed here. Raw data files are under Datasets." />;
-  return (
-    <Section title="Links and references" description="External links. Raw data files are under Datasets.">
-      <ul className="divide-y divide-line-soft">
-        {p.links.map((l) => (
-          <li key={l.url} className="py-2.5 text-sm">
-            <a href={l.url} target="_blank" rel="noopener noreferrer" className="break-all font-medium text-primary hover:underline">
-              {l.label}
-            </a>
-            <p className="break-all text-xs text-ink-muted">{l.url}</p>
-          </li>
-        ))}
-        {p.files.map((f) => (
-          <li key={f.name} className="py-2.5 text-sm text-ink">
-            {f.name} <span className="text-xs text-ink-muted">File name only, from an earlier version</span>
-          </li>
-        ))}
-      </ul>
-    </Section>
-  );
-}
-
 /**
  * Project workspace: Overview, Datasets, Modules and Resources. The open tab is
  * kept in the URL hash so a refresh or a shared link returns to it.
@@ -174,6 +117,7 @@ export default function ProjectWorkspace({ slug, crumbs = false }: { slug: strin
   const p = useProject(slug);
   const hydrated = useHydrated();
   const all = useAllDatasets();
+  const add = useAdditions(p?.id ?? "");
   const [tab, setTab] = useState<TabId>("overview");
 
   useEffect(() => {
@@ -206,7 +150,8 @@ export default function ProjectWorkspace({ slug, crumbs = false }: { slug: strin
 
   const mine = all.filter((d) => d.projectRef === p.id);
   const categoryCount = new Set(mine.map((d) => d.category)).size;
-  const modulesCount = projectDef(p.slug)?.modules.length ?? 0;
+  const modulesCount = (projectDef(p.slug)?.modules.length ?? 0) + add.modules.length;
+  const resourcesCount = p.links.length + add.resources.length;
 
   const header = (
     <PageHeader
@@ -224,7 +169,7 @@ export default function ProjectWorkspace({ slug, crumbs = false }: { slug: strin
     />
   );
 
-  const counts: Partial<Record<TabId, number>> = { datasets: mine.length, modules: modulesCount };
+  const counts: Partial<Record<TabId, number>> = { datasets: mine.length, modules: modulesCount, resources: resourcesCount };
 
   return (
     <div className={crumbs ? "mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:py-14" : ""}>
@@ -261,8 +206,8 @@ export default function ProjectWorkspace({ slug, crumbs = false }: { slug: strin
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`} className="mt-6">
         {tab === "overview" ? <Overview p={p} datasetCount={mine.length} categoryCount={categoryCount} go={choose} /> : null}
         {tab === "datasets" ? <DatasetsPanel project={p} /> : null}
-        {tab === "modules" ? <Modules p={p} /> : null}
-        {tab === "resources" ? <Resources p={p} /> : null}
+        {tab === "modules" ? <ModulesPanel p={p} /> : null}
+        {tab === "resources" ? <ResourcesPanel p={p} /> : null}
       </div>
     </div>
   );

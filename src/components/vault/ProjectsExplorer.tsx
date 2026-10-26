@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { useAllDatasets, useProjects } from "@/lib/projects/store";
-import { CATEGORIES, STATUSES } from "@/lib/projects/types";
+import { STATUSES } from "@/lib/projects/types";
 import ProjectCard from "./ProjectCard";
 import EmptyState from "@/components/ui/EmptyState";
 import { LinkButton } from "@/components/ui/Button";
@@ -27,23 +27,20 @@ export default function ProjectsExplorer() {
   }, [allDatasets]);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("All");
-  const [cat, setCat] = useState("All");
   const [sort, setSort] = useState<(typeof SORTS)[number]>("Newest");
 
   const shown = useMemo(() => {
     const n = q.trim().toLowerCase();
     return projects
       .filter((p) => status === "All" || p.status === status)
-      .filter((p) => cat === "All" || p.category === cat)
       .filter((p) => !n || [p.title, p.summary, p.owner, p.projectId, p.client.organisation, p.tags.join(" ")].join(" ").toLowerCase().includes(n))
       .sort((a, b) => (sort === "Newest" ? b.createdAt.localeCompare(a.createdAt) : a.title.localeCompare(b.title)));
-  }, [projects, q, status, cat, sort]);
+  }, [projects, q, status, sort]);
 
-  const filtered = q.trim() !== "" || status !== "All" || cat !== "All";
+  const filtered = q.trim() !== "" || status !== "All";
   const clear = () => {
     setQ("");
     setStatus("All");
-    setCat("All");
   };
 
   return (
@@ -59,12 +56,6 @@ export default function ProjectsExplorer() {
         <select value={status} onChange={(e) => setStatus(e.target.value)} aria-label="Status" className={ctl}>
           <option value="All">All statuses</option>
           {STATUSES.map((s) => (
-            <option key={s}>{s}</option>
-          ))}
-        </select>
-        <select value={cat} onChange={(e) => setCat(e.target.value)} aria-label="Category" className={ctl}>
-          <option value="All">All categories</option>
-          {CATEGORIES.map((s) => (
             <option key={s}>{s}</option>
           ))}
         </select>

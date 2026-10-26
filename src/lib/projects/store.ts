@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { EMPTY_CLIENT, type Dataset, type Project, type ProjectInput } from "./types";
+import { EMPTY_CLIENT, type CustomModule, type Dataset, type Project, type ProjectAdditions, type ProjectInput, type ProjectResource } from "./types";
 import { SEED } from "./seed";
 
 /**
@@ -25,7 +25,7 @@ const notify = () => listeners.forEach((l) => l());
 function subscribe(cb: () => void) {
   listeners.add(cb);
   const onStorage = (e: StorageEvent) => {
-    if (e.key === KEY || e.key === DS_KEY) cb();
+    if (e.key === KEY || e.key === DS_KEY || e.key === ADD_KEY) cb();
   };
   window.addEventListener("storage", onStorage);
   return () => {
@@ -209,4 +209,60 @@ export function commitDatasets(datasets: Dataset[]): { ok: true } | { ok: false;
   }
   notify();
   return { ok: true };
+}
+
+/* ---------- Additions: modules and resources added after creation ----------
+ * Kept in their own record, keyed by Project.id, so they work for the built-in
+ * projects too without changing the built-in data. */
+
+const ADD_KEY = "tp.additions.v1";
+const NO_ADDITIONS: ProjectAdditions = { resources: [], modules: [] };
+let aRaw: string | null = null;
+let aMap: Record<string, ProjectAdditions> = {};
+
+function getAdditionsMap(): Record<string, ProjectAdditions> {
+  if (typeof window === "undefined") return aMap;
+  const raw = rawGet(ADD_KEY);
+  if (raw === aRaw) return aMap;
+  aRaw = raw;
+  try {
+    aMap = raw ? (JSON.parse(raw) as Record<string, ProjectAdditions>) : {};
+  } catch {
+    aMap = {};
+  }
+  return aMap;
+}
+
+export function useAdditions(projectRef: string): ProjectAdditions {
+  const map = useSyncExternalStore(subscribe, getAdditionsMap, () => aMap);
+  return map[projectRef] ?? NO_ADDITIONS;
+}
+
+function writeAdditions(projectRef: string, change: (a: ProjectAdditions) => ProjectAdditions): { ok: true } | { ok: false; error: string } {
+  const prev = rawGet(ADD_KEY);
+  try {
+    const map = getAdditionsMap();
+    const next = { ...map, [projectRef]: change(map[projectRef] ?? NO_ADDITIONS) };
+    window.localStorage.setItem(ADD_KEY, JSON.stringify(next));
+  } catch {
+    restore(ADD_KEY, prev);
+    return { ok: false, error: "Could not save in this browser." };
+  }
+  notify();
+  return { ok: true };
+}
+
+const newId = (p: string) => `${p}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
+
+export function addResource(projectRef: string, r: Omit<ProjectResource, "id" | "addedAt">) {
+  return writeAdditions(projectRef, (a) => ({ ...a, resources: [...a.resources, { ...r, id: newId("res"), addedAt: new Date().toISOString() }] }));
+}
+export function removeResource(projectRef: string, id: string) {
+  return writeAdditions(projectRef, (a) => ({ ...a, resources: a.resources.filter((r) => r.id !== id) }));
+}
+export function addModule(projectRef: string, m: Omit<CustomModule, "id" | "addedAt">) {
+  return writeAdditions(projectRef, (a) => ({ ...a, modules: [...a.modules, { ...m, id: newId("mod"), addedAt: new Date().toISOString() }] }));
+}
+export function removeModule(projectRef: string, id: string) {
+  return writeAdditions(projectRef, (a) => ({ ...a, modules: a.modules.filter((m) => m.id !== id) }));
 }

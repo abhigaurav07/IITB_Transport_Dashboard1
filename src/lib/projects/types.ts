@@ -111,3 +111,34 @@ export interface Dataset {
   /** SHA-256 of the exact bytes stored, as hex. Empty if the browser could not compute it. */
   sha256: string;
 }
+
+/** A link or reference added to a project after it was created. */
+export interface ProjectResource {
+  id: string;
+  label: string;
+  url: string;
+  note: string;
+  addedAt: string;
+}
+
+export const MODULE_STATUSES = ["Planned", "In progress", "Completed"] as const;
+export type ModuleStatus = (typeof MODULE_STATUSES)[number];
+
+/**
+ * A module recorded from the interface. It names an analysis and can point to
+ * where the work lives (a link). Modules with their own built pages are
+ * registered in modules.ts instead.
+ */
+export interface CustomModule {
+  id: string;
+  name: string;
+  description: string;
+  status: ModuleStatus;
+  link: string;
+  addedAt: string;
+}
+
+export interface ProjectAdditions {
+  resources: ProjectResource[];
+  modules: CustomModule[];
+}
