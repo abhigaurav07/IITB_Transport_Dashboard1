@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RoadIcon } from "@/components/icons";
+import ProfileMenu from "./ProfileMenu";
 
-const LINKS = [
+const LINKS: { href: string; label: string; short?: string }[] = [
   { href: "/projects", label: "Projects" },
-  { href: "/projects/new", label: "Create New Project" },
+  { href: "/projects/new", label: "Create New Project", short: "New Project" },
 ];
 
 export default function VaultHeader() {
@@ -18,7 +19,7 @@ export default function VaultHeader() {
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-navy text-white">
             <RoadIcon className="h-[18px] w-[18px]" />
           </span>
-          <span className="leading-tight">
+          <span className="leading-tight max-[359px]:hidden">
             <span className="block text-sm font-semibold tracking-tight text-ink">Transport Projects</span>
             <span className="hidden text-[11px] text-ink-muted sm:block">IIT Bombay · Transportation Engineering</span>
           </span>
@@ -31,13 +32,21 @@ export default function VaultHeader() {
                 key={l.href}
                 href={l.href}
                 aria-current={active ? "page" : undefined}
-                className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm ${active ? "bg-navy-50 font-medium text-navy" : "text-ink-muted hover:bg-navy-50 hover:text-ink"}`}
+                className={`whitespace-nowrap rounded-lg px-2 py-2 text-sm sm:px-3 ${active ? "bg-navy-50 font-medium text-navy" : "text-ink-muted hover:bg-navy-50 hover:text-ink"}`}
               >
-                {l.label}
+                {l.short ? (
+                  <>
+                    <span className="sm:hidden">{l.short}</span>
+                    <span className="hidden sm:inline">{l.label}</span>
+                  </>
+                ) : (
+                  l.label
+                )}
               </Link>
             );
           })}
         </nav>
+        <ProfileMenu />
       </div>
     </header>
   );

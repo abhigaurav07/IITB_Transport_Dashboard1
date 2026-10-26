@@ -227,7 +227,7 @@ export function ResourcesPanel({ p }: { p: Project }) {
         </div>
       ) : null}
 
-      {all.length === 0 ? (
+      {all.length === 0 && p.files.length === 0 ? (
         open ? null : <EmptyState title="No resources yet" description="Add links to papers, repositories or reference pages for this project." action={<Button type="button" onClick={() => setOpen(true)}>Add resource</Button>} />
       ) : (
         <ul className="divide-y divide-line-soft rounded-xl border border-line bg-surface shadow-card">
